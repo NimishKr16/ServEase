@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin-Login</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css" rel="stylesheet" />
+    
+</head>
+<style>
+    #ad-head {
+        text-align: center;
+        padding: 5%;
+        color: rgb(5, 85, 234);
+    }
+    .gradient-custom {
+    /* fallback for old browsers */
+    background: #ff9a9e;
+  
+    background: -webkit-linear-gradient(to bottom, rgba(255,154,158,0.85), rgba(250,208,196,0.85));
+  
+    background: linear-gradient(to bottom, rgba(255,154,158,0.85), rgba(250,208,196,0.85))
+  }
+</style>
+
+<body>
+    <section class="vh-100 gradient-custom" id="ad-head">
+        <h1>Hey Admin! Welcome back to ServEase!🛠️</h1>
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                    <div class="card shadow-2-strong" style="border-radius: 1rem; background-color: rgb(31, 31, 31);">
+                        <div class="card-body p-5 text-center">
+                            <h3 class="mb-5" style="color: white;">ADMIN LOGIN</h3>
+                            <form action="{{ url_for('admin_login') }}" method="POST">
+                                <div data-mdb-input-init class="form-outline mb-4">
+                                    <input type="email" style="color: white;" id="typeEmailX-2" name="email"
+                                        class="form-control form-control-lg" />
+                                    <label class="form-label" for="typeEmailX-2">Email</label>
+                                </div>
+                                <div data-mdb-input-init class="form-outline mb-4">
+                                    <input type="password" style="color: white;" id="typePasswordX-2" name="password"
+                                        class="form-control form-control-lg" />
+                                    <label class="form-label" for="typePasswordX-2">Password</label>
+                                </div>
+                                <button
+                                    class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+<!-- MDB -->
+<script
+  type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.umd.min.js"
+></script>
+</html>

@@ -26,14 +26,51 @@ class Admin(db.Model):
     def __repr__(self):
         return f"<{self.Username} | {self.Password} | {self.Email}>"
     
-    
+
+# * ------ GENERIC ROUTES -------
+
 @app.route('/')
 def home():
     return render_template('index.html')
 
 
-# ''' RUN APP.PY '''
+# ------ WRAPPER FUNCTIONS ------
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'admin' not in session or session['admin'] != True:
+            return redirect(url_for('login', message='Must be logged in as an admin'))
+        return f(*args, **kwargs)
+    return decorated_function
 
+
+# * ------------ ADMIN ROUTES ------------ #
+
+@app.route('/admin')
+def admin_login_page():
+    return render_template('admin-login.html')
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        # print(email,password)
+        admin = Admin.query.filter_by(Email=email).first()
+        if admin and password == admin.Password:
+            session['admin'] = True
+            return redirect(url_for('admin_dashboard'))
+        else:
+            return "<h1>Invalid uname or pwd</h1>"
+
+
+@app.route('/admin/dashboard')
+@admin_required
+def admin_dashboard():
+    return render_template('admin-dash.html')
+
+# ''' RUN APP.PY '''
+# Admin Details: name: admin, passwowrd: admin123
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
