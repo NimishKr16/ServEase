@@ -33,7 +33,9 @@ class Admin(db.Model):
 def home():
     return render_template('index.html')
 
-
+@app.route('/login')
+def login():
+    pass
 # ------ WRAPPER FUNCTIONS ------
 def admin_required(f):
     @wraps(f)
