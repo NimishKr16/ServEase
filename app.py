@@ -35,7 +35,14 @@ def home():
 
 @app.route('/login')
 def login():
-    pass
+    message = request.args.get('message')
+    return render_template('login.html',message=message)
+
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
+
+
 # ------ WRAPPER FUNCTIONS ------
 def admin_required(f):
     @wraps(f)

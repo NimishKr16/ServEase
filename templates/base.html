@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} {% endblock %}</title>
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css"
+    rel="stylesheet"
+  />
+  <link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+  rel="stylesheet"
+/>
+{% block css %} {% endblock %}
+
+</head>
+<body>
+    <header >
+
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg " style="background-color: #262626;">
+            <!-- Container wrapper -->
+            <div class="container-fluid">
+                <!-- Toggle button -->
+                <button
+                data-mdb-collapse-init
+                class="navbar-toggler text-white"
+                type="button"
+                data-mdb-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+                >
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <!-- Collapsible wrapper -->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <!-- Navbar brand -->
+                <a class="navbar-brand mt-2 mt-lg-0" href="{{url_for('home')}}">
+                    <img
+                    src="{{ url_for('static', filename='images/PromoPulseLogo.png') }}"
+                    height="50"
+                    alt="MDB Logo"
+                    loading="lazy"
+                   style="border-radius: 30%;"
+                    />
+                </a>
+                <!-- Left links -->
+                <ul class="navbar-nav text-white me-auto mb-2 mb-lg-0" >
+                    <li class="nav-item">
+                      {% if session['role'] == 'sponsor' %}
+                        <a class="nav-link text-white" href="{{ url_for('sponsor_dashboard') }}">Dashboard</a>
+                        {% elif session['role'] == 'influencer' %}
+                        <a class="nav-link text-white" href="{{ url_for('influencer_dashboard') }}">Dashboard</a>
+                        {% endif %}
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Team</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Projects</a>
+                    </li>
+                </ul>
+                <!-- Left links -->
+            </div>
+            <!-- Collapsible wrapper -->
+            
+            <!-- Right elements -->
+            <div class="d-flex align-items-center">
+                <!-- Icon -->
+                <a class="text-reset me-3" href="#">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                
+                <!-- Notifications -->
+                <div class="dropdown">
+                    <a
+                    data-mdb-dropdown-init
+                    class="text-reset me-3 dropdown-toggle hidden-arrow"
+                    href="#"
+                    id="navbarDropdownMenuLink"
+                    role="button"
+                    aria-expanded="false"
+                    >
+                    <i class="fas fa-bell" style="font-size: 25px;"></i>
+                    <span class="badge rounded-pill badge-notification bg-danger">!</span>
+                </a>
+                <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="navbarDropdownMenuLink"
+                >
+                <li>
+                    <a class="dropdown-item" href="#">Some news</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#">Another news</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                </li>
+            </ul>
+        </div>
+        <!-- Avatar -->
+        <div class="dropdown">
+            <a
+            data-mdb-dropdown-init
+            class="dropdown-toggle d-flex align-items-center hidden-arrow"
+            href="#"
+            id="navbarDropdownMenuAvatar"
+            role="button"
+            aria-expanded="false"
+            >
+            <i class="fa-solid fa-user" style="font-size: 28px; margin-right: 1vw;"></i>
+            <p style="margin-top: 2vh; font-weight: bold; padding-right: 1em;"> {{name}} </p>
+        </a>
+        <ul
+        class="dropdown-menu dropdown-menu-end"
+        aria-labelledby="navbarDropdownMenuAvatar"
+        >
+        <li>
+            <a class="dropdown-item" href="#">My profile</a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#">Settings</a>
+        </li>
+        <li>
+            <a class="dropdown-item" href=" {{url_for('logout')}} ">Logout</a>
+        </li>
+    </ul>
+</div>
+</div>
+<!-- Right elements -->
+</div>
+<!-- Container wrapper -->
+</nav>
+<!-- Navbar -->
+</header>
+
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+
+
+        <!-- Remove the container if you want to extend the Footer to full width. -->
+
+
+    <footer class="text-center text-lg-start border border-white pt-4" style="background-color: #262626; margin-top: 90vh;">
+    <!-- Grid container -->
+    <div class="container p-4">
+      <!--Grid row-->
+      <div class="row">
+        <!--Grid column-->
+        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+          <h5 class="text-uppercase mb-4">OUR WORLD</h5>
+
+          <ul class="list-unstyled mb-4">
+            <li>
+              <a href="#!" class="text-white">About us</a>
+            </li>
+            <li>
+              <a href="#!" class="text-white">Collections</a>
+            </li>
+            <li>
+              <a href="#!" class="text-white">Environmental philosophy</a>
+            </li>
+            <li>
+              <a href="#!" class="text-white">Artist collaborations</a>
+            </li>
+          </ul>
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+          <h5 class="text-uppercase mb-4">Assistance</h5>
+
+          <ul class="list-unstyled">
+            <li>
+              <a href="#!" class="text-white">Contact us</a>
+            </li>
+            <li>
+              <a href="#!" class="text-white">Size Guide</a>
+            </li>
+            <li>
+              <a href="#!" class="text-white">Shipping Information</a>
+            </li>
+            <li>
+              <a href="#!" class="text-white">Returns & Exchanges</a>
+            </li>
+            <li>
+              <a href="#!" class="text-white">Payment</a>
+            </li>
+          </ul>
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+          <h5 class="text-uppercase mb-4">Careers</h5>
+
+          <ul class="list-unstyled">
+            <li>
+              <a href="#!" class="text-white">Jobs</a>
+            </li>
+          </ul>
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+          <h5 class="text-uppercase mb-4">Sign up to our newsletter</h5>
+
+          <div class="form-outline form-white mb-4">
+            <input type="email" id="form5Example2" class="form-control" />
+            <label class="form-label" for="form5Example2">Email address</label>
+          </div>
+
+          <button type="submit" class="btn btn-outline-white btn-block">Subscribe</button>
+        </div>
+        <!--Grid column-->
+      </div>
+      <!--Grid row-->
+    </div>
+    <!-- Grid container -->
+
+    <!-- Copyright -->
+    <div class="text-center p-3 border-top border-white">
+      © 2024 Copyright:
+      <a class="text-white" href="{{url_for('home')}}">PromoPulse.com</a>
+    </div>
+    <!-- Copyright -->
+<!-- End of .container -->
+    </footer>
+    <script
+    type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.umd.min.js"
+    ></script>
+
+</body>
+</html>

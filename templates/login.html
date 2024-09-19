@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css"
+    rel="stylesheet"
+  />
+  <link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+  rel="stylesheet"
+/>
+
+    <title>Login-ServEase</title>
+</head>
+<style>
+    .divider:after,
+    .divider:before {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #eee;
+    }
+    body{
+        background-color: rgb(32, 32, 32);
+    }
+
+    #page-head{
+        color: rgb(144, 181, 245);
+        margin-top: 4rem;
+        font-family:monospace;
+    }
+    
+    .page-div{
+        margin-left: 32vw;
+        margin-bottom: 6rem;
+    }
+</style>
+<body>
+    <div class="page-div">
+
+        <h1 id="page-head">Welcome to ServEase! 🛠️</h1>
+        
+    </div>
+    <section class="vh-95">
+        <div class="container py-5 h-100">
+          <div class="row d-flex align-items-center justify-content-center h-100 ">
+            <div class="col-md-8 col-lg-7 col-xl-6">
+              <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
+                class="img-fluid" alt="Phone image">
+            </div>
+            <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
+              <form id="loginForm" action="/userLogin" method="post">
+                <!-- Email input -->
+                <div data-mdb-input-init class="form-outline mb-4">
+                  <input type="email" name="email" id="form1Example13" class="form-control form-control-lg" required style="color: white;" />
+                  <label class="form-label text-white" for="form1Example13">Email address</label>
+                </div>
+      
+                <!-- Password input -->
+                <div data-mdb-input-init class="form-outline mb-4">
+                  <input type="password" name="pwd" id="form1Example23" class="form-control form-control-lg" required />
+                  <label class="form-label text-white" for="form1Example23">Password</label>
+                </div>
+
+                <div>
+                  {% if message %}
+                  <h3 style="color: red; font-size: 1rem; text-align: center; font-weight: bolder;"> {{message}} </h3>
+                  {% endif %}
+                </div>
+      
+                <div class="d-flex justify-content-around align-items-center mb-4">
+                  <!-- Checkbox -->
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="form1Example3" checked />
+                    <label class="form-check-label text-white" for="form1Example3"> Remember me </label>
+                  </div>
+                  <a href="#!" style="color: rgb(159, 159, 216);">Forgot password?</a>
+                </div>
+      
+                <!-- Submit button -->
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Sign in</button>
+      
+                <div class="divider d-flex align-items-center my-4">
+                  <p class="text-center fw-bold mx-3 mb-0 text-white">OR</p>
+                </div>
+                  <p style="color: rgb(236, 3, 3); font-size: 18px;"> Dont have an account?</p>
+                <a data-mdb-ripple-init class="btn btn-primary btn-lg btn-block" style="background-color: #55acee" href="{{url_for('signup')}}"
+                  role="button">
+                  <i class="fab fa-twitter me-2"></i>SIGN UP</a>
+
+                 <div style="margin-top: 2vh;"> <a href="{{url_for('admin_login_page')}}">Admin @PromoPulse ? Login Now.</a></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+      <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.umd.min.js"
+    ></script>
+    
+</body>
+</html>
