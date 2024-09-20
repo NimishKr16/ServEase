@@ -25,7 +25,79 @@ class Admin(db.Model):
 
     def __repr__(self):
         return f"<{self.Username} | {self.Password} | {self.Email}>"
-    
+
+# * --- Service Professional Table --- #
+class ServiceProfessional(db.Model):
+    __tablename__ = 'service_professionals'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
+    description = db.Column(db.String(255), nullable=True)
+    service_type = db.Column(db.String(50), nullable=False)
+    experience = db.Column(db.Integer, nullable=False)
+    is_approved = db.Column(db.Boolean, default=False)
+    reviews = db.relationship('Review', backref='professional', lazy=True)
+    service_requests = db.relationship('ServiceRequest', backref='professional', lazy=True)
+
+    def __repr__(self):
+        return f"<ServiceProfessional(id={self.id}, name='{self.name}', service_type='{self.service_type}', experience={self.experience}, is_approved={self.is_approved})>"
+
+
+# * --- Customer Table --- #
+class Customer(db.Model):
+    __tablename__ = 'customers'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
+    address = db.Column(db.String(255), nullable=True)
+    pin_code = db.Column(db.String(10), nullable=False)
+    service_requests = db.relationship('ServiceRequest', backref='customer', lazy=True)
+    reviews = db.relationship('Review', backref='customer', lazy=True)
+
+    def __repr__(self):
+        return f"<Customer(id={self.id}, name='{self.name}', pin_code='{self.pin_code}')>"
+
+# * --- Service Table --- #
+class Service(db.Model):
+    __tablename__ = 'services'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    time_required = db.Column(db.Integer, nullable=False)  # in minutes
+    description = db.Column(db.String(255), nullable=True)
+    service_requests = db.relationship('ServiceRequest', backref='service', lazy=True)
+
+    def __repr__(self):
+        return f"<Service(id={self.id}, name='{self.name}', price={self.price}, time_required={self.time_required})>"
+
+# * --- Service Request Table --- #
+class ServiceRequest(db.Model):
+    __tablename__ = 'service_requests'
+    id = db.Column(db.Integer, primary_key=True)
+    service_id = db.Column(db.Integer, db.ForeignKey('services.id'), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
+    professional_id = db.Column(db.Integer, db.ForeignKey('service_professionals.id'), nullable=True)
+    date_of_request = db.Column(db.DateTime, default=db.func.current_timestamp())
+    date_of_completion = db.Column(db.DateTime, nullable=True)
+    service_status = db.Column(db.String(50), nullable=False, default='requested')  # can be requested, assigned, closed
+    remarks = db.Column(db.String(255), nullable=True)
+
+    def __repr__(self):
+        return (f"<ServiceRequest(id={self.id}, service_id={self.service_id}, customer_id={self.customer_id}, "
+                f"professional_id={self.professional_id}, status='{self.service_status}')>")
+
+# * --- Review Table --- #
+class Review(db.Model):
+    __tablename__ = 'reviews'
+    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
+    professional_id = db.Column(db.Integer, db.ForeignKey('service_professionals.id'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)  # Assuming rating out of 5
+    comment = db.Column(db.String(255), nullable=True)
+    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    def __repr__(self):
+        return f"<Review(id={self.id}, rating={self.rating}, comment='{self.comment}')>"
 
 # * ------ GENERIC ROUTES -------
 
