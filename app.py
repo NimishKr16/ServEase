@@ -25,7 +25,23 @@ class Admin(db.Model):
 
     def __repr__(self):
         return f"<{self.Username} | {self.Password} | {self.Email}>"
-
+    
+    
+# * --- User Table --- #
+class User(db.Model):
+    __tablename__ = 'users'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    Name = db.Column(db.String(100), nullable=False)
+    Password = db.Column(db.String(256), nullable=False)
+    Email = db.Column(db.String(100), unique=True, nullable=False)
+    Role = db.Column(db.String(100), nullable=False)
+    
+    # Relationships
+    customer = db.relationship('customers', uselist=False, backref='user')
+    serviceProf = db.relationship('service_professionals', uselist=False, backref='user')
+    
+    
 # * --- Service Professional Table --- #
 class ServiceProfessional(db.Model):
     __tablename__ = 'service_professionals'
@@ -114,6 +130,8 @@ def login():
 def signup():
     return render_template('signup.html')
 
+
+# * --------- AUTHENTICATION ----------
 
 # ------ WRAPPER FUNCTIONS ------
 def admin_required(f):
