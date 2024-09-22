@@ -50,7 +50,7 @@ class ServiceProfessional(db.Model):
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     description = db.Column(db.String(255), nullable=True)
     service_type = db.Column(db.String(50), nullable=False)
-    experience = db.Column(db.Integer, nullable=False)
+    experience = db.Column(db.Integer, nullable=True)
     is_approved = db.Column(db.Boolean, default=False)
     reviews = db.relationship('Review', backref='professional', lazy=True)
     service_requests = db.relationship('ServiceRequest', backref='professional', lazy=True)
@@ -132,7 +132,32 @@ def signup():
 
 
 # * --------- AUTHENTICATION ----------
-
+@app.route('/registerUser', methods=['POST'])
+def registerUser():
+     if request.method == 'POST':
+        name = request.form.get('name')
+        role = request.form.get('role')
+        pwd = request.form.get('pwd')
+        email = request.form.get('email')
+        industry = request.form.get('industry')
+        
+        existing_user = User.query.filter_by(Email=email).first()
+        if existing_user:
+            return render_template('signup.html',msg=True)
+        
+        hashed_password = generate_password_hash(pwd, method='pbkdf2:sha256', salt_length=16)
+        new_user = User(Name=name, Password=hashed_password, Email=email, Role=role)
+        db.session.add(new_user)
+        db.session.commit()
+        print("==== NEW USER ADDED ==== ")
+        
+        if role == 'service' and industry != 'CUSTOMER':
+            new_server = ServiceProfessional(id=new_user.id,service_type=industry)
+            
+        elif role == 'customer':
+        
+        
+        
 # ------ WRAPPER FUNCTIONS ------
 def admin_required(f):
     @wraps(f)
