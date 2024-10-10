@@ -197,9 +197,9 @@ def loginUser():
 def customer_dashboard():
     return render_template('customerView.html')
 
-@app.route('/serviceDashboard/<server_id>')
+@app.route('/serviceDashboard')
 def service_dashboard():
-    return render_template('serviceView.html')
+    return render_template('serviceDash.html')
 
 # ------ WRAPPER FUNCTIONS ------
 def admin_required(f):
