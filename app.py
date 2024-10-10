@@ -241,6 +241,22 @@ def admin_logout():
 def admin_dashboard():
     return render_template('admin-dash.html')
 
+# * ----- CORE ADMIN FUNCTIONALITY  -----
+
+@app.route('/admin/dashboard/customers')
+def manage_customers():
+    return render_template('adminCust-dash.html')
+
+
+@app.route('/admin/dashboard/service')
+def manage_service():
+    return render_template('adminserv-dash.html')
+
+
+@app.route('/admin/dashboard/reviews')
+def manage_reviews():
+    return render_template('adminReq-dash.html')
+
 # ''' RUN APP.PY '''
 #! Admin Details: email: admin@gmail.com, password: admin123
 
