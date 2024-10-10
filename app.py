@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 
@@ -11,6 +12,7 @@ app.secret_key = 'servease-123-$%^-mad1-proj*'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///servease.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 # ! ---------------- MODELS ---------------- #
 
@@ -67,7 +69,7 @@ class Customer(db.Model):
     name = db.Column(db.String(100), nullable=False)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     address = db.Column(db.String(255), nullable=True)
-    pin_code = db.Column(db.String(10), nullable=False)
+    pin_code = db.Column(db.String(10), nullable=True)
     
     # Foreign key linking to the User table
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
@@ -154,10 +156,18 @@ def registerUser():
         print("==== NEW USER ADDED ==== ")
         
         if role == 'service' and industry != 'CUSTOMER':
-            new_server = ServiceProfessional(id=new_user.id,service_type=industry)
+            new_server = ServiceProfessional(id=new_user.id,service_type=industry,is_approved=False)
+            db.session.add(new_server)
+            db.session.commit()
+            print("=== NEW SERVER ADDED ===")
     
         elif role == 'customer':
-            pass
+            new_cust = Customer(id=new_user.id,name=name)
+            db.session.add(new_cust)
+            db.session.commit()
+            print("=== NEW CUSTOMER ADDED ===")
+        
+        return redirect(url_for('login'))
         
         
         
