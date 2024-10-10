@@ -19,7 +19,6 @@ migrate = Migrate(app, db)
 # * --- Admin Table --- #
 class Admin(db.Model):
     __tablename__ = 'admin'
-    
     AdminID = db.Column(db.Integer, primary_key=True)
     Username = db.Column(db.String(50), nullable=False)
     Password = db.Column(db.String(255), nullable=False)
@@ -70,7 +69,6 @@ class Customer(db.Model):
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     address = db.Column(db.String(255), nullable=True)
     pin_code = db.Column(db.String(10), nullable=True)
-    
     # Foreign key linking to the User table
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
 
@@ -136,6 +134,13 @@ def signup():
 
 
 # * --------- AUTHENTICATION ----------
+# ---- LOGOUT ----
+@app.route('/logout')
+def logout():
+    session.pop('user')
+    return redirect(url_for('login',message="Logged out successfully"))
+
+# ------ REGISTERATION ------
 @app.route('/registerUser', methods=['POST'])
 def registerUser():
      if request.method == 'POST':
@@ -156,7 +161,7 @@ def registerUser():
         print("==== NEW USER ADDED ==== ")
         
         if role == 'service' and industry != 'CUSTOMER':
-            new_server = ServiceProfessional(id=new_user.id,service_type=industry,is_approved=False)
+            new_server = ServiceProfessional(name=name,id=new_user.id,service_type=industry,is_approved=False)
             db.session.add(new_server)
             db.session.commit()
             print("=== NEW SERVER ADDED ===")
@@ -167,10 +172,35 @@ def registerUser():
             db.session.commit()
             print("=== NEW CUSTOMER ADDED ===")
         
-        return redirect(url_for('login'))
+        return redirect(url_for('login',message="Registered successfully"))
         
-        
-        
+
+# ------ LOGIN USER ------
+@app.route('/loginUser', methods=['POST'])
+def loginUser():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        pwd = request.form.get('pwd')
+        user = User.query.filter_by(Email=email).first()
+        if user and check_password_hash(user.Password, pwd):
+            session['user'] = user.id
+            if user.Role == 'customer':
+                return redirect(url_for('customer_dashboard'))
+            elif user.Role == 'service':
+                return redirect(url_for('service_dashboard'))
+            
+        else:
+            return redirect(url_for('login',message="Invalid credentials"))
+
+
+@app.route('/servEase/home')
+def customer_dashboard():
+    return render_template('customerView.html')
+
+@app.route('/serviceDashboard/<server_id>')
+def service_dashboard():
+    return render_template('serviceView.html')
+
 # ------ WRAPPER FUNCTIONS ------
 def admin_required(f):
     @wraps(f)
