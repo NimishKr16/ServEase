@@ -191,6 +191,11 @@ def admin_login():
             return "<h1>Invalid uname or pwd</h1>"
 
 
+@app.route('/admin_logout')
+def admin_logout():
+    session.pop('admin')
+    return redirect(url_for('admin_login_page'))
+
 @app.route('/admin/dashboard')
 @admin_required
 def admin_dashboard():
