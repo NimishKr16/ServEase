@@ -38,8 +38,8 @@ class User(db.Model):
     Role = db.Column(db.String(100), nullable=False)
     
     # Relationships
-    customer = db.relationship('customers', uselist=False, backref='user')
-    serviceProf = db.relationship('service_professionals', uselist=False, backref='user')
+    customer = db.relationship('Customer', uselist=False, backref='user')  # Refers to Customer class
+    serviceProf = db.relationship('ServiceProfessional', uselist=False, backref='user')  # Refers to ServiceProfessional class
     
     
 # * --- Service Professional Table --- #
@@ -52,11 +52,12 @@ class ServiceProfessional(db.Model):
     service_type = db.Column(db.String(50), nullable=False)
     experience = db.Column(db.Integer, nullable=True)
     is_approved = db.Column(db.Boolean, default=False)
+    
+    # Foreign key linking to the User table
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+
     reviews = db.relationship('Review', backref='professional', lazy=True)
     service_requests = db.relationship('ServiceRequest', backref='professional', lazy=True)
-
-    def __repr__(self):
-        return f"<ServiceProfessional(id={self.id}, name='{self.name}', service_type='{self.service_type}', experience={self.experience}, is_approved={self.is_approved})>"
 
 
 # * --- Customer Table --- #
@@ -67,11 +68,12 @@ class Customer(db.Model):
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     address = db.Column(db.String(255), nullable=True)
     pin_code = db.Column(db.String(10), nullable=False)
+    
+    # Foreign key linking to the User table
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+
     service_requests = db.relationship('ServiceRequest', backref='customer', lazy=True)
     reviews = db.relationship('Review', backref='customer', lazy=True)
-
-    def __repr__(self):
-        return f"<Customer(id={self.id}, name='{self.name}', pin_code='{self.pin_code}')>"
 
 # * --- Service Table --- #
 class Service(db.Model):
@@ -153,7 +155,7 @@ def registerUser():
         
         if role == 'service' and industry != 'CUSTOMER':
             new_server = ServiceProfessional(id=new_user.id,service_type=industry)
-            
+    
         elif role == 'customer':
             pass
         
@@ -195,7 +197,7 @@ def admin_dashboard():
     return render_template('admin-dash.html')
 
 # ''' RUN APP.PY '''
-#! Admin Details: name: admin, passwowrd: admin123
+#! Admin Details: email: admin@gmail.com, password: admin123
 
 if __name__ == '__main__':
     with app.app_context():
