@@ -155,6 +155,7 @@ def registerUser():
             new_server = ServiceProfessional(id=new_user.id,service_type=industry)
             
         elif role == 'customer':
+            pass
         
         
         
@@ -194,7 +195,8 @@ def admin_dashboard():
     return render_template('admin-dash.html')
 
 # ''' RUN APP.PY '''
-# Admin Details: name: admin, passwowrd: admin123
+#! Admin Details: name: admin, passwowrd: admin123
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
