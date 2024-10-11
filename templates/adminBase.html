@@ -43,8 +43,8 @@
       <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
         <ul class="space-y-4 font-medium">
           <li class="pb-16">
-            <span
-              href="#"
+            <a
+              href="{{ url_for('admin_dashboard') }}"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white group"
             >
               <svg
@@ -62,12 +62,12 @@
                 />
               </svg>
               <span class="ms-3">ADMIN- ServEase 🛠️ </span>
-            </span>
+            </a>
           </li>
          
           <li>
             <a
-              href="#"
+              href="{{ url_for('manage_reviews') }}"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <svg
@@ -91,7 +91,7 @@
           </li>
           <li>
             <a
-              href="#"
+              href="{{ url_for('manage_customers') }}"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <svg
@@ -110,7 +110,7 @@
           </li>
           <li>
             <a
-              href="#"
+              href="{{ url_for('manage_service') }}"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <svg

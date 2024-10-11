@@ -1,8 +1,30 @@
+
 {% extends 'adminBase.html' %}
 {% block title %}Admin Dashboard{% endblock %}
-{% block css %} {% endblock %}
+{% block css %}
+<link href="https://cdn.tailwindcss.com/2.2.19/tailwind.min.css" rel="stylesheet">
+{% endblock %}
 {% block content %} 
-
-<h1>USERS</h1>
+<h1 class="text-4xl font-bold text-center p-8 text-teal-600">ADMIN PANEL - ServEase🛠️</h1>
+<div class="flex flex-wrap justify-center gap-6">
+    <!-- Card 1 -->
+    <a href="#" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+      <h5 class="mb-2 text-2xl font-bold tracking-tight text-green-700">CUSTOMERS</h5>
+      <p class="font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
+    </a>
+  
+    <!-- Card 2 -->
+    <a href="#" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+      <h5 class="mb-2 text-2xl font-bold tracking-tight text-blue-600">SERVICE EXPERTS</h5>
+      <p class="font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
+    </a>
+  
+    <!-- Card 3 -->
+    <a href="#" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+      <h5 class="mb-2 text-2xl font-bold tracking-tight text-red-700">FLAGGED USERS</h5>
+      <p class="font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
+    </a>
+  </div>
+    
 
 {% endblock %}
