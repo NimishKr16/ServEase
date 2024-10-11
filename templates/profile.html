@@ -3,17 +3,17 @@
 {% block content %}
     <div>
     <div class="fixed top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/4">
-        <div class="avatar fixed sm:ml-[11.5vw] xs:ml-30 pb-2 online placeholder self-center">
+        <div class="avatar fixed ml-[7.5rem] pb-2 online placeholder self-center">
             <div class="bg-neutral text-neutral-content rounded-full w-16 h-16">
               <span class="text-xl">{{ ab }}</span>
             </div>
         </div>
         <div class="mt-20">
             <p class="text-center text-white text-2xl">{{customerName}}</p>
-            <p class="text-center text-white text-2xl">Joined On: {{ joinDate }} </p>
+            <p class="text-center text-2xl">Joined On: {{ joinDate }} </p>
             {% if address %}
-            <p class="text-center text-white text-2xl">Address: {{ address }} </p>
-            <p class="text-center text-white text-2xl">Pincode: {{ pinCode }} </p>
+            <p class="text-center text-2xl">Address: {{ address }} </p>
+            <p class="text-center text-2xl">Pincode: {{ pinCode }} </p>
             {% else %}
             <p class="text-center text-2xl font-semibold text-red-500">Set Address to start making bookings!</p>
             {% endif %}
