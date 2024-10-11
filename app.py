@@ -132,6 +132,16 @@ def login():
 def signup():
     return render_template('signup.html')
 
+# * --------- PROFILE ----------
+@app.route('/profile')
+def profile():
+    userId = session.get('user')
+    customer = Customer.query.filter_by(id=userId).first()
+    name = customer.name
+    joinDate = customer.date_created.strftime("%d-%b-%Y")
+    address = customer.address
+    pinCode = customer.pin_code
+    return render_template('profile.html', address=address, pinCode=pinCode, ab = name[0],customerName=name, joinDate=joinDate)
 
 # * --------- AUTHENTICATION ----------
 # ---- LOGOUT ----
@@ -184,6 +194,7 @@ def loginUser():
         user = User.query.filter_by(Email=email).first()
         if user and check_password_hash(user.Password, pwd):
             session['user'] = user.id
+            session['role'] = user.Role
             if user.Role == 'customer':
                 return redirect(url_for('customer_dashboard'))
             elif user.Role == 'service':
@@ -230,6 +241,37 @@ def admin_login():
         else:
             return "<h1>Invalid uname or pwd</h1>"
 
+# * ------------ CHANGE PASSWORD --------------
+@app.route('/change_password', methods=['GET', 'POST'])
+def change_password():
+    if request.method == 'POST':
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        userId = session.get('user')
+        user = User.query.filter_by(id=userId).first()
+        if new_password == confirm_password:
+            user.Password = new_password
+            db.session.commit()
+            print("======= PASSWORD CHANGED SUCCESSFULLY ======= ")
+            return redirect(url_for('profile'))
+        else:
+            return "<h1>Passwords do not match</h1>"
+
+# * ------------ EDIT ADDRESS --------------
+@app.route('/edit_address', methods=['GET', 'POST'])
+def edit_address():
+    if request.method == 'POST':
+        address = request.form.get('address')
+        pincode = request.form.get('pincode')
+        userId = session.get('user')
+        # print(userId)
+        customer = Customer.query.filter_by(id=userId).first()
+        customer.address = address
+        customer.pin_code = pincode
+        db.session.commit()
+        print("======= ADDRESS EDITED SUCCESSFULLY =======")
+        return redirect(url_for('profile'))
+
 
 @app.route('/admin_logout')
 def admin_logout():
@@ -241,21 +283,26 @@ def admin_logout():
 def admin_dashboard():
     return render_template('admin-dash.html')
 
-# * ----- CORE ADMIN FUNCTIONALITY  -----
+#* -----  ADMIN FUNCTIONALITY  -----
 
 @app.route('/admin/dashboard/customers')
+@admin_required
 def manage_customers():
     return render_template('adminCust-dash.html')
 
 
 @app.route('/admin/dashboard/service')
+@admin_required
 def manage_service():
     return render_template('adminserv-dash.html')
 
 
 @app.route('/admin/dashboard/reviews')
+@admin_required
 def manage_reviews():
     return render_template('adminReq-dash.html')
+
+#* -----  CORE ADMIN FUNCTIONALITY  -----
 
 # ''' RUN APP.PY '''
 #! Admin Details: email: admin@gmail.com, password: admin123
