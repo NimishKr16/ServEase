@@ -59,54 +59,32 @@
       </tr>
     </thead>
     <tbody>
+      {% for customer in customers %}
       <tr class="hover:bg-slate-50">
         <td class="p-4 border-b border-slate-200 py-5">
-          <p class="block font-semibold text-sm text-slate-800">John Doe</p>
+          <p class="block font-semibold text-sm text-slate-800">{{ customer.name }}</p>
         </td>
         <td class="p-4 border-b border-slate-200 py-5">
-          <p class="text-sm text-slate-500">01/05/2022</p>
+          <p class="text-sm text-slate-500">{{ customer.date_created.strftime('%d/%m/%Y') }}</p>
         </td>
         <td class="p-4 border-b border-slate-200 py-5">
-          <p class="text-sm text-slate-500">110045</p>
+          <p class="text-sm text-slate-500">{{ customer.pin_code }}</p>
         </td>
         <td class="p-4 border-b border-slate-200 py-5">
-          <button type="button" class="text-slate-500 hover:text-slate-700">
-            <span class="text-red-500 underline">Block</span>
-          </button>
+          <form action="{{ url_for('toggle_block_customer', customer_id=customer.id) }}" method="POST">
+            {% if customer.is_blocked == False or customer.is_blocked is none %}
+              <button type="submit" class="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-600">
+                Block
+              </button>
+            {% else %}
+              <button type="submit" class="bg-orange-500 text-white font-bold py-2 px-4 rounded hover:bg-orange-600">
+                Unblock
+              </button>
+            {% endif %}
+          </form>
         </td>
       </tr>
-      <tr class="hover:bg-slate-50">
-        <td class="p-4 border-b border-slate-200 py-5">
-          <p class="block font-semibold text-sm text-slate-800">Jane Smith</p>
-        </td>
-        <td class="p-4 border-b border-slate-200 py-5">
-          <p class="text-sm text-slate-500">02/10/2023</p>
-        </td>
-        <td class="p-4 border-b border-slate-200 py-5">
-          <p class="text-sm text-slate-500">560001</p>
-        </td>
-        <td class="p-4 border-b border-slate-200 py-5">
-          <button type="button" class="text-slate-500 hover:text-slate-700">
-            <span class="text-red-500 underline">Block</span>
-          </button>
-        </td>
-      </tr>
-      <tr class="hover:bg-slate-50">
-        <td class="p-4 border-b border-slate-200 py-5">
-          <p class="block font-semibold text-sm text-slate-800">Michael Scott</p>
-        </td>
-        <td class="p-4 border-b border-slate-200 py-5">
-          <p class="text-sm text-slate-500">12/03/2021</p>
-        </td>
-        <td class="p-4 border-b border-slate-200 py-5">
-          <p class="text-sm text-slate-500">123456</p>
-        </td>
-        <td class="p-4 border-b border-slate-200 py-5">
-          <button type="button" class="text-slate-500 hover:text-slate-700">
-            <span class="text-red-500 underline">Block</span>
-          </button>
-        </td>
-      </tr>
+      {% endfor %}
     </tbody>
   </table>
 </div>

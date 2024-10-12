@@ -75,6 +75,8 @@ class Customer(db.Model):
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     address = db.Column(db.String(255), nullable=True)
     pin_code = db.Column(db.String(10), nullable=True)
+    is_blocked = db.Column(db.Boolean, default=False)
+
     # Foreign key linking to the User table
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
 
@@ -205,7 +207,12 @@ def loginUser():
             session['user'] = user.id
             session['role'] = user.Role
             if user.Role == 'customer':
-                return redirect(url_for('customer_dashboard'))
+                customer = Customer.query.filter_by(id=user.id).first()
+                if customer:
+                    if customer.is_blocked:
+                        return redirect(url_for('login',message="User has been Blocked"))
+                    else:
+                        return redirect(url_for('customer_dashboard'))
             elif user.Role == 'service':
                 return redirect(url_for('service_dashboard'))
             
@@ -297,20 +304,36 @@ def admin_dashboard():
 
 #* -----  ADMIN FUNCTIONALITY  -----
 
+# ------------------------------ MANAGE CUSTOMERS ------------------------------ 
 @app.route('/admin/dashboard/customers')
 @admin_required
 def manage_customers():
     reqCount = ServiceProfessional.query.filter_by(is_approved=False).count()
-    return render_template('adminCust-dash.html',reqCount=reqCount)
+    customers = Customer.query.all()
+    return render_template('adminCust-dash.html',reqCount=reqCount,customers=customers)
 
+@app.route('/toggle_block_customer/<int:customer_id>', methods=['POST'])
+def toggle_block_customer(customer_id):
+    # Fetch the customer by ID
+    customer = Customer.query.get(customer_id)
+    if customer:
+        # Toggle the is_blocked status
+        if customer.is_blocked:
+            customer.is_blocked = False
+        else:
+            customer.is_blocked = True
+        # Commit changes to the database
+        db.session.commit()
+    return redirect(url_for('manage_customers'))
 
+#! -----  CORE ADMIN FUNCTIONALITY  -----
 @app.route('/admin/dashboard/service')
 @admin_required
 def manage_service():
     reqCount = ServiceProfessional.query.filter_by(is_approved=False).count()
     return render_template('adminserv-dash.html',reqCount=reqCount)
 
-
+# ------------------------------ MANAGE SERVICE PROF. REQUESTS ------------------------------ 
 @app.route('/admin/dashboard/reviews')
 @admin_required
 def manage_reviews():
@@ -338,7 +361,8 @@ def deny_service_professional(professional_id):
         db.session.commit()
     return redirect(url_for('manage_reviews'))  # Redirect to the relevant page
 
-#* -----  CORE ADMIN FUNCTIONALITY  -----
+# ------------------------------------------------------------------
+
 
 # ''' RUN APP.PY '''
 #! Admin Details: email: admin@gmail.com, password: admin123
