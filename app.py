@@ -411,6 +411,29 @@ def delete_service(service_id):
         print('Service not found.', 'error')
     return redirect(url_for('manage_services'))  
 
+@app.route('/add_service', methods=['GET', 'POST'])
+def add_service():
+    if request.method == 'POST':
+        # Get data from the form
+        name = request.form.get('name')
+        price = request.form.get('price')
+        time_required = request.form.get('timereq')
+        description = request.form.get('description')
+
+        # Create a new service instance
+        new_service = Service(name=name, price=float(price), time_required=int(time_required), description=description)
+
+        # Add to the database
+        db.session.add(new_service)
+        db.session.commit()
+
+        print('Service added successfully')
+        return redirect(url_for('manage_services'))  # Replace with your actual dashboard view
+    
+    # Render the add service form (for GET requests)
+    return render_template('admnservices.html')  # Create a template for adding a service
+
+
 # ''' RUN APP.PY '''
 #! Admin Details: email: admin@gmail.com, password: admin123
 
