@@ -97,7 +97,7 @@ class Service(db.Model):
     service_requests = db.relationship('ServiceRequest', backref='service', lazy=True)
 
     def __repr__(self):
-        return f"<Service(id={self.id}, name='{self.name}', price={self.price}, time_required={self.time_required})>"
+        return f"<Service( name='{self.name}', price={self.price})>"
 
 # * --- Service Request Table --- #
 class ServiceRequest(db.Model):
@@ -302,7 +302,7 @@ def admin_dashboard():
     expCount = ServiceProfessional.query.filter_by(is_approved=True).count()
     return render_template('admin-dash.html',custCount=custCount,expCount=expCount,reqCount=reqCount)
 
-#* -----  ADMIN FUNCTIONALITY  -----
+#! -----  CORE ADMIN FUNCTIONALITY  -----
 
 # ------------------------------ MANAGE CUSTOMERS ------------------------------ 
 @app.route('/admin/dashboard/customers')
@@ -326,8 +326,12 @@ def toggle_block_customer(customer_id):
         db.session.commit()
     return redirect(url_for('manage_customers'))
 
-#! -----  CORE ADMIN FUNCTIONALITY  -----
-@app.route('/admin/dashboard/service')
+
+# ------------------------------------------------------------ 
+
+
+# ------------------------------ MANAGE SERVICE PROF. ------------------------------
+@app.route('/admin/dashboard/serviceExpert')
 @admin_required
 def manage_service():
     servicePro = ServiceProfessional.query.filter_by(is_approved=True).all()
@@ -373,6 +377,39 @@ def deny_service_professional(professional_id):
 
 # ------------------------------------------------------------------
 
+
+# ------------------------------ MANAGE SERVICES ------------------------------ 
+@app.route('/admin/dashboard/services')
+@admin_required
+def manage_services():
+    services = Service.query.all()
+    reqCount = ServiceProfessional.query.filter_by(is_approved=False).count()
+    return render_template('admservices.html',reqCount=reqCount, services=services)
+
+@app.route('/update_service', methods=['POST'])
+def update_service():
+    service_id = request.form.get('service_id')
+    service = Service.query.get(service_id)
+    if service:
+        service.name = request.form.get('name')
+        service.price = request.form.get('price')
+        service.time_required = request.form.get('time_required')
+        service.description = request.form.get('description')
+        db.session.commit()
+    return redirect(url_for('service_management'))
+
+@app.route('/delete_service/<int:service_id>', methods=['POST'])
+def delete_service(service_id):
+    # Find the service by ID
+    service = Service.query.get(service_id)
+    
+    if service:
+        db.session.delete(service)
+        db.session.commit()
+        print('Service deleted successfully!')
+    else:
+        print('Service not found.', 'error')
+    return redirect(url_for('manage_services'))  
 
 # ''' RUN APP.PY '''
 #! Admin Details: email: admin@gmail.com, password: admin123
