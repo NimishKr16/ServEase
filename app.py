@@ -210,7 +210,7 @@ def loginUser():
                 customer = Customer.query.filter_by(id=user.id).first()
                 if customer:
                     if customer.is_blocked:
-                        return redirect(url_for('login',message="User has been Blocked"))
+                        return redirect(url_for('login',message="This User is Blocked"))
                     else:
                         return redirect(url_for('customer_dashboard'))
             elif user.Role == 'service':
@@ -330,8 +330,18 @@ def toggle_block_customer(customer_id):
 @app.route('/admin/dashboard/service')
 @admin_required
 def manage_service():
+    servicePro = ServiceProfessional.query.filter_by(is_approved=True).all()
     reqCount = ServiceProfessional.query.filter_by(is_approved=False).count()
-    return render_template('adminserv-dash.html',reqCount=reqCount)
+    return render_template('adminserv-dash.html',reqCount=reqCount, service_professionals=servicePro)
+
+
+@app.route('/block_service_professional/<int:professional_id>', methods=['POST'])
+def block_service_professional(professional_id):
+    professional = ServiceProfessional.query.get(professional_id)
+    if professional:
+        professional.is_approved = False
+        db.session.commit()
+    return redirect(url_for('manage_service'))
 
 # ------------------------------ MANAGE SERVICE PROF. REQUESTS ------------------------------ 
 @app.route('/admin/dashboard/reviews')
