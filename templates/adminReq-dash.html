@@ -3,5 +3,55 @@
 {% block css %}
 {% endblock %}
 {% block content %}
-<h1>THIS IS PENDING REQ PAGE </h1>
+<div class="w-full flex justify-between items-center mb-3 mt-8 pl-3 pb-8 self-center">
+    <div class="self-center">
+        <h3 class="text-3xl font-semibold text-blue-600">Pending Requests</h3>
+        <h3 class="text-2xl font-semibold text-slate-500">Approve/Deny Service Experts from joining ServEase🛠️</h3>
+    </div>
+</div>
+
+<div class="relative flex flex-col h-full overflow-scroll text-gray-700 bg-white shadow-md rounded-lg bg-clip-border">
+    <table class="w-full sm:w-[25vw] text-left table-auto">
+      <thead>
+        <tr class="border-b border-slate-300 bg-slate-50">
+          <th class="p-4 text-sm font-normal leading-none text-slate-500">Name</th>
+          <th class="p-4 text-sm font-normal leading-none text-slate-500">Date Joined</th>
+          <th class="p-4 text-sm font-normal leading-none text-slate-500">Service</th>
+          <th class="p-4 text-sm font-normal leading-none text-slate-500">Experience</th>
+          <th class="p-4 text-sm font-normal leading-none text-slate-500">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for professional in service_professionals %}
+        <tr class="hover:bg-slate-50">
+          <td class="p-4 border-b border-slate-200 py-5">
+            <p class="block font-semibold text-sm text-slate-800">{{ professional.name }}</p>
+          </td>
+          <td class="p-4 border-b border-slate-200 py-5">
+            <p class="text-sm text-slate-500">{{ professional.date_created.strftime('%d/%m/%Y') }}</p>
+          </td>
+          <td class="p-4 border-b border-slate-200 py-5">
+            <p class="text-sm text-slate-500">{{ professional.service_type }}</p>
+          </td>
+          <td class="p-4 border-b border-slate-200 py-5">
+            <p class="text-sm text-slate-500">{{ professional.experience }} years</p>
+          </td>
+          <td class="p-4 border-b border-slate-200 py-5 flex space-x-2">
+            <form action="{{ url_for('approve_service_professional', professional_id=professional.id) }}" method="POST">
+              <button type="submit" class="px-3 py-1 text-sm font-semibold text-white bg-green-500 rounded hover:bg-green-700">
+                Approve
+              </button>
+            </form>
+            <form action="{{ url_for('deny_service_professional', professional_id=professional.id) }}" method="POST">
+              <button type="submit" class="px-3 py-1 text-sm font-semibold text-white bg-red-500 rounded hover:bg-red-700">
+                Deny
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
 {% endblock %}

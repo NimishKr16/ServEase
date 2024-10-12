@@ -41,8 +41,11 @@ class User(db.Model):
     # Relationships
     customer = db.relationship('Customer', uselist=False, backref='user')  # Refers to Customer class
     serviceProf = db.relationship('ServiceProfessional', uselist=False, backref='user')  # Refers to ServiceProfessional class
+
+    def __repr__(self):
+        return f"<{self.Name} | {self.Email} | {self.Role}>"
     
-    
+
 # * --- Service Professional Table --- #
 class ServiceProfessional(db.Model):
     __tablename__ = 'service_professionals'
@@ -60,6 +63,9 @@ class ServiceProfessional(db.Model):
     reviews = db.relationship('Review', backref='professional', lazy=True)
     service_requests = db.relationship('ServiceRequest', backref='professional', lazy=True)
 
+    def __repr__(self):
+        return f"<name='{self.name}', service_type='{self.service_type}', experience={self.experience})>"
+
 
 # * --- Customer Table --- #
 class Customer(db.Model):
@@ -74,6 +80,9 @@ class Customer(db.Model):
 
     service_requests = db.relationship('ServiceRequest', backref='customer', lazy=True)
     reviews = db.relationship('Review', backref='customer', lazy=True)
+
+    def __repr__(self):
+        return f"<name='{self.name}', address='{self.address}', pin_code='{self.pin_code}')>"
 
 # * --- Service Table --- #
 class Service(db.Model):
@@ -281,26 +290,53 @@ def admin_logout():
 @app.route('/admin/dashboard')
 @admin_required
 def admin_dashboard():
-    return render_template('admin-dash.html')
+    reqCount = ServiceProfessional.query.filter_by(is_approved=False).count()
+    custCount = Customer.query.count()
+    expCount = ServiceProfessional.query.filter_by(is_approved=True).count()
+    return render_template('admin-dash.html',custCount=custCount,expCount=expCount,reqCount=reqCount)
 
 #* -----  ADMIN FUNCTIONALITY  -----
 
 @app.route('/admin/dashboard/customers')
 @admin_required
 def manage_customers():
-    return render_template('adminCust-dash.html')
+    reqCount = ServiceProfessional.query.filter_by(is_approved=False).count()
+    return render_template('adminCust-dash.html',reqCount=reqCount)
 
 
 @app.route('/admin/dashboard/service')
 @admin_required
 def manage_service():
-    return render_template('adminserv-dash.html')
+    reqCount = ServiceProfessional.query.filter_by(is_approved=False).count()
+    return render_template('adminserv-dash.html',reqCount=reqCount)
 
 
 @app.route('/admin/dashboard/reviews')
 @admin_required
 def manage_reviews():
-    return render_template('adminReq-dash.html')
+    unapproved = ServiceProfessional.query.filter_by(is_approved=False).all()
+    # print(unapproved)
+    reqCount = ServiceProfessional.query.filter_by(is_approved=False).count()
+    # print(reqCount)
+    return render_template('adminReq-dash.html',reqCount=reqCount, service_professionals=unapproved)
+
+@app.route('/approve/<int:professional_id>', methods=['POST'])
+def approve_service_professional(professional_id):
+    # Logic to approve the service professional
+    service_professional = ServiceProfessional.query.get(professional_id)
+    if service_professional:
+        service_professional.is_approved = True
+        db.session.commit()
+    return redirect(url_for('manage_reviews'))  # Redirect to the relevant page
+
+@app.route('/deny/<int:professional_id>', methods=['POST'])
+def deny_service_professional(professional_id):
+    # Logic to deny the service professional
+    service_professional = ServiceProfessional.query.get(professional_id)
+    if service_professional:
+        service_professional.is_approved = False
+        db.session.commit()
+    return redirect(url_for('manage_reviews'))  # Redirect to the relevant page
 
 #* -----  CORE ADMIN FUNCTIONALITY  -----
 
