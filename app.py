@@ -61,6 +61,7 @@ class User(db.Model):
     Password = db.Column(db.String(256), nullable=False)
     Email = db.Column(db.String(100), unique=True, nullable=False)
     Role = db.Column(db.String(100), nullable=False)
+    image_url = db.Column(db.String(255), nullable=True)
     
     # Relationships
     customer = db.relationship('Customer', uselist=False, backref='user')  # Refers to Customer class
@@ -100,6 +101,7 @@ class Customer(db.Model):
     address = db.Column(db.String(255), nullable=True)
     pin_code = db.Column(db.String(10), nullable=True)
     is_blocked = db.Column(db.Boolean, default=False)
+    
 
     # Foreign key linking to the User table
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
@@ -119,7 +121,8 @@ class Service(db.Model):
     time_required = db.Column(db.Integer, nullable=False)  # in minutes
     description = db.Column(db.String(255), nullable=True)
     service_requests = db.relationship('ServiceRequest', backref='service', lazy=True)
-
+    image_url = db.Column(db.String(255), nullable=True)
+    
     def __repr__(self):
         return f"<Service( name='{self.name}', price={self.price})>"
 
@@ -176,7 +179,7 @@ def profile():
     joinDate = customer.date_created.strftime("%d-%b-%Y")
     address = customer.address
     pinCode = customer.pin_code
-    return render_template('profile.html', address=address, pinCode=pinCode, ab = name[0],customerName=name, joinDate=joinDate)
+    return render_template('profile.html', address=address, pinCode=pinCode, ab = name[0],customerName=name, joinDate=joinDate,image_url=session.get('image_url'))
 
 # * --------- AUTHENTICATION ----------
 # ---- LOGOUT ----
@@ -228,17 +231,25 @@ def loginUser():
         pwd = request.form.get('pwd')
         user = User.query.filter_by(Email=email).first()
         if user and check_password_hash(user.Password, pwd):
-            session['user'] = user.id
-            session['role'] = user.Role
             if user.Role == 'customer':
                 customer = Customer.query.filter_by(id=user.id).first()
                 if customer:
                     if customer.is_blocked:
                         return redirect(url_for('login',message="This User is Blocked"))
                     else:
-                        return redirect(url_for('customer_dashboard'))
+                        session['user'] = user.id
+                        session['role'] = user.Role
+                        if user.image_url:
+                            session['image_url'] = user.image_url
+
+                        return redirect(url_for('customer_dashboard',image_url=session.get('image_url')))
             elif user.Role == 'service':
-                return redirect(url_for('service_dashboard'))
+                session['user'] = user.id
+                session['role'] = user.Role
+                if user.image_url:
+                    session['image_url'] = user.image_url
+
+                return redirect(url_for('service_dashboard',image_url=session.get('image_url')))
             
         else:
             return redirect(url_for('login',message="Invalid credentials"))
@@ -247,17 +258,18 @@ def loginUser():
 @app.route('/servEase/home')
 def customer_dashboard():
     services = Service.query.all()
-    return render_template('customerView.html',services=services)
+    image_url = session.get('image_url')
+    return render_template('customerView.html',services=services,image_url=image_url)
 
 
 @app.route('/servEase/home/seeall')
 def customer_allView():
     services = Service.query.all()
-    return render_template('customerViewall.html',services=services)
+    return render_template('customerViewall.html',services=services,image_url=session.get('image_url'))
 
 @app.route('/serviceDashboard')
 def service_dashboard():
-    return render_template('serviceDash.html')
+    return render_template('serviceDash.html',image_url=session.get('image_url'))
 
 # ------ WRAPPER FUNCTIONS ------
 def admin_required(f):
@@ -308,16 +320,32 @@ def change_password():
 @app.route('/edit_address', methods=['GET', 'POST'])
 def edit_address():
     if request.method == 'POST':
+        image = request.files['image']
+        image_urlFinal = None
         address = request.form.get('address')
         pincode = request.form.get('pincode')
         userId = session.get('user')
+        if image:
+            upload_result = cloudinary.uploader.upload(image)
+            image_url = upload_result.get('secure_url')
+            if image_url:
+                image_urlFinal = image_url
+                session['image_url'] = image_urlFinal
+                user = User.query.filter_by(id=userId).first()
+                user.image_url = image_urlFinal
+
+        
         # print(userId)
         customer = Customer.query.filter_by(id=userId).first()
-        customer.address = address
-        customer.pin_code = pincode
+        if address:
+            customer.address = address
+        if pincode:
+            customer.pin_code = pincode
+        
         db.session.commit()
-        print("======= ADDRESS EDITED SUCCESSFULLY =======")
-        return redirect(url_for('profile'))
+        print("======= PROFILE UPDATED SUCCESSFULLY =======")
+        print(image_urlFinal)
+        return redirect(url_for('profile',image_url=image_urlFinal))
 
 
 @app.route('/admin_logout')
