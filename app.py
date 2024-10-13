@@ -5,6 +5,17 @@ from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 from flask_migrate import Migrate
 
+#  CLOUD IMAGE STORAGE
+import cloudinary
+import cloudinary.uploader
+from cloudinary.utils import cloudinary_url
+
+# .ENV
+from dotenv import load_dotenv
+import os
+
+
+
 app = Flask(__name__)
 
 app.secret_key = 'servease-123-$%^-mad1-proj*'  
@@ -13,6 +24,19 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///servease.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+load_dotenv()
+cloud_api_secret = os.getenv('CLOUD_API_SECRET')
+cloud_api_key = os.getenv('CLOUD_API_KEY')
+cloud_name = os.getenv('CLOUD_NAME')
+
+cloudinary.config( 
+    cloud_name = f"{cloud_name}", 
+    api_key = f"{cloud_api_key}", 
+    api_secret = f"{cloud_api_secret}", 
+    secure=True
+)
+
 
 # ! ---------------- MODELS ---------------- #
 
@@ -338,13 +362,6 @@ def toggle_block_customer(customer_id):
 
 
 # ------------------------------ MANAGE SERVICE PROF. ------------------------------
-@app.route('/admin/dashboard/serviceExpert')
-@admin_required
-def manage_service():
-    servicePro = ServiceProfessional.query.filter_by(is_approved=True).all()
-    reqCount = ServiceProfessional.query.filter_by(is_approved=False).count()
-    return render_template('adminserv-dash.html',reqCount=reqCount, service_professionals=servicePro)
-
 
 @app.route('/block_service_professional/<int:professional_id>', methods=['POST'])
 def block_service_professional(professional_id):
@@ -353,6 +370,27 @@ def block_service_professional(professional_id):
         professional.is_approved = False
         db.session.commit()
     return redirect(url_for('manage_service'))
+
+# SEARCH AND DISPLAY PROFESSIONALS
+@app.route('/admin/dashboard/serviceExpert', methods=['GET'])
+@admin_required
+def manage_service():
+    query = request.args.get('query', '').strip()
+
+    # Filter based on the search query if provided, otherwise fetch all approved professionals
+    if query:
+        servicePro = ServiceProfessional.query.filter(
+            (ServiceProfessional.name.ilike(f'%{query}%')) | 
+            (ServiceProfessional.service_type.ilike(f'%{query}%'))
+        ).filter(ServiceProfessional.is_approved == True).all()
+    else:
+        servicePro = ServiceProfessional.query.filter_by(is_approved=True).all()
+    
+    # Get the count of service professionals with pending approval requests
+    reqCount = ServiceProfessional.query.filter_by(is_approved=False).count()
+
+    # Render the template with the filtered list of professionals and request count
+    return render_template('adminserv-dash.html', reqCount=reqCount, service_professionals=servicePro)
 
 # ------------------------------------------------------------ 
 
