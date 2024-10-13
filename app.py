@@ -263,11 +263,11 @@ def customer_dashboard():
     if request.method == 'GET':
         # Get the search query from the form
         search_query = request.args.get('search', '').strip()
-        print(search_query)
-        print(type(search_query))
+        # print(search_query)
+        # print(type(search_query))
         # Query the database for services that match the search term
         services = Service.query.filter(Service.name.ilike(f'%{search_query}%')).all()
-        print(services)
+        # print(services)
     else:
         # If it's a GET request, fetch all services
         services = Service.query.all()
@@ -282,15 +282,17 @@ def customer_allView():
     if request.method == 'GET':
         # Get the search query from the form
         search_query = request.args.get('search', '').strip()
-        print(search_query)
-        print(type(search_query))
+        
+        # print(search_query)
+        # print(type(search_query))
+        
         # Query the database for services that match the search term
         services = Service.query.filter(Service.name.ilike(f'%{search_query}%')).all()
         print(services)
     else:
         # If it's a GET request, fetch all services
         services = Service.query.all()
-        
+
     return render_template('customerViewall.html',services=services,image_url=session.get('image_url'))
 
 @app.route('/serviceDashboard')
@@ -498,8 +500,13 @@ def update_service():
         service.price = request.form.get('price')
         service.time_required = request.form.get('time_required')
         service.description = request.form.get('description')
+        image = request.files['image']
+        if image:
+            upload_result = cloudinary.uploader.upload(image)
+            image_url = upload_result.get('secure_url')
+            service.image_url = image_url
         db.session.commit()
-    return redirect(url_for('service_management'))
+    return redirect(url_for('manage_services'))
 
 
 @app.route('/delete_service/<int:service_id>', methods=['POST'])
@@ -524,9 +531,13 @@ def add_service():
         price = request.form.get('price')
         time_required = request.form.get('timereq')
         description = request.form.get('description')
-
+        image = request.files['image']
+        imgUrl = None
+        if image:
+            upload_result = cloudinary.uploader.upload(image)
+            imgUrl = upload_result.get('secure_url')
         # Create a new service instance
-        new_service = Service(name=name, price=float(price), time_required=int(time_required), description=description)
+        new_service = Service(name=name, price=float(price), time_required=int(time_required), description=description, image_url=imgUrl)
 
         # Add to the database
         db.session.add(new_service)
