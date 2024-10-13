@@ -122,7 +122,7 @@ class Service(db.Model):
     description = db.Column(db.String(255), nullable=True)
     service_requests = db.relationship('ServiceRequest', backref='service', lazy=True)
     image_url = db.Column(db.String(255), nullable=True)
-    
+
     def __repr__(self):
         return f"<Service( name='{self.name}', price={self.price})>"
 
@@ -255,16 +255,42 @@ def loginUser():
             return redirect(url_for('login',message="Invalid credentials"))
 
 
-@app.route('/servEase/home')
+@app.route('/servEase/home',methods=['GET','POST'])
 def customer_dashboard():
     services = Service.query.all()
     image_url = session.get('image_url')
+    # print(request.method)
+    if request.method == 'GET':
+        # Get the search query from the form
+        search_query = request.args.get('search', '').strip()
+        print(search_query)
+        print(type(search_query))
+        # Query the database for services that match the search term
+        services = Service.query.filter(Service.name.ilike(f'%{search_query}%')).all()
+        print(services)
+    else:
+        # If it's a GET request, fetch all services
+        services = Service.query.all()
     return render_template('customerView.html',services=services,image_url=image_url)
 
 
 @app.route('/servEase/home/seeall')
 def customer_allView():
     services = Service.query.all()
+    image_url = session.get('image_url')
+    # print(request.method)
+    if request.method == 'GET':
+        # Get the search query from the form
+        search_query = request.args.get('search', '').strip()
+        print(search_query)
+        print(type(search_query))
+        # Query the database for services that match the search term
+        services = Service.query.filter(Service.name.ilike(f'%{search_query}%')).all()
+        print(services)
+    else:
+        # If it's a GET request, fetch all services
+        services = Service.query.all()
+        
     return render_template('customerViewall.html',services=services,image_url=session.get('image_url'))
 
 @app.route('/serviceDashboard')
@@ -300,7 +326,7 @@ def admin_login():
         else:
             return "<h1>Invalid uname or pwd</h1>"
 
-# * ------------ CHANGE PASSWORD --------------
+# ------------ CHANGE PASSWORD --------------
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
     if request.method == 'POST':
@@ -316,7 +342,7 @@ def change_password():
         else:
             return "<h1>Passwords do not match</h1>"
 
-# * ------------ EDIT ADDRESS --------------
+# ------------ EDIT ADDRESS --------------
 @app.route('/edit_address', methods=['GET', 'POST'])
 def edit_address():
     if request.method == 'POST':
