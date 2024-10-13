@@ -222,7 +222,14 @@ def loginUser():
 
 @app.route('/servEase/home')
 def customer_dashboard():
-    return render_template('customerView.html')
+    services = Service.query.all()
+    return render_template('customerView.html',services=services)
+
+
+@app.route('/servEase/home/seeall')
+def customer_allView():
+    services = Service.query.all()
+    return render_template('customerViewall.html',services=services)
 
 @app.route('/serviceDashboard')
 def service_dashboard():
@@ -347,6 +354,9 @@ def block_service_professional(professional_id):
         db.session.commit()
     return redirect(url_for('manage_service'))
 
+# ------------------------------------------------------------ 
+
+
 # ------------------------------ MANAGE SERVICE PROF. REQUESTS ------------------------------ 
 @app.route('/admin/dashboard/reviews')
 @admin_required
@@ -386,6 +396,7 @@ def manage_services():
     reqCount = ServiceProfessional.query.filter_by(is_approved=False).count()
     return render_template('admservices.html',reqCount=reqCount, services=services)
 
+
 @app.route('/update_service', methods=['POST'])
 def update_service():
     service_id = request.form.get('service_id')
@@ -397,6 +408,7 @@ def update_service():
         service.description = request.form.get('description')
         db.session.commit()
     return redirect(url_for('service_management'))
+
 
 @app.route('/delete_service/<int:service_id>', methods=['POST'])
 def delete_service(service_id):
@@ -410,6 +422,7 @@ def delete_service(service_id):
     else:
         print('Service not found.', 'error')
     return redirect(url_for('manage_services'))  
+
 
 @app.route('/add_service', methods=['GET', 'POST'])
 def add_service():
@@ -433,9 +446,14 @@ def add_service():
     # Render the add service form (for GET requests)
     return render_template('admnservices.html')  # Create a template for adding a service
 
+# ------------------------------------------------------------ 
+
+
 
 # ''' RUN APP.PY '''
 #! Admin Details: email: admin@gmail.com, password: admin123
+
+
 
 if __name__ == '__main__':
     with app.app_context():

@@ -5,33 +5,35 @@ ServEase🛠️ - Home
 {% block css %}
 {% endblock %}
 {% block content %}
-<div class="row row-cols-1 row-cols-md-3 g-4">
-  <div class="col">
-    <div class="card">
-      <img src="https://mdbcdn.b-cdn.net/img/new/standard/nature/023.jpg" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-      </div>
+<div class="flex justify-between items-center p-6">
+  <h1 class="text-3xl text-slate-600 pt-2 font-semibold">
+    The easy, reliable way to take care of your home
+  </h1>
+  <a href="{{ url_for('customer_allView') }}" class="text-blue-600 font-medium hover:underline">
+    See All &gt;
+  </a>
+</div>
+<div class="relative flex overflow-x-auto space-x-8 p-6">
+  {% for service in services %}
+  <div class="flex-none bg-white shadow-sm border border-slate-200 rounded-lg w-80">
+    <div class="relative h-46 m-2.5 overflow-hidden text-white rounded-md">
+      <img src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=800&amp;q=80" alt="card-image" />
+    </div>
+    <div class="p-4">
+      <h6 class="mb-2 text-slate-800 text-xl font-semibold">
+        {{ service.name }}
+      </h6>
+      <p class="text-slate-600 leading-normal font-light">
+        ₹{{ service.price }} <br />
+        {{ service.description }}
+      </p>
+    </div>
+    <div class="px-4 pb-4 pt-0 mt-2">
+      <button class="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button">
+        Book Now
+      </button>
     </div>
   </div>
-  <div class="col">
-    <div class="card">
-      <img src="https://mdbcdn.b-cdn.net/img/new/standard/nature/023.jpg" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-      </div>
-    </div>
-  </div>
-  <div class="col">
-    <div class="card">
-      <img src="https://mdbcdn.b-cdn.net/img/new/standard/nature/023.jpg" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-      </div>
-    </div>
-  </div>
+  {% endfor %}
 </div>
 {% endblock %}
