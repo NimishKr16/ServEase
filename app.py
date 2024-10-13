@@ -328,6 +328,18 @@ def admin_login():
         else:
             return "<h1>Invalid uname or pwd</h1>"
 
+
+
+# ! -------------- CORE CUSTOMER FUNCTIONALITY --------------
+@app.route('/servEase/bookService/<int:service_id>/<int:price>/<string:desc>', methods=['GET', 'POST'])
+def bookService(service_id,price,desc):
+    service = Service.query.get(service_id)
+    if service:
+        image_url = service.image_url
+    return render_template('book.html',service_id=service_id,price=price,desc=desc,service_image_url=image_url,image_url=session.get('image_url'))
+
+
+
 # ------------ CHANGE PASSWORD --------------
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
