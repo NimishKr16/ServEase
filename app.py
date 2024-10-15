@@ -331,20 +331,42 @@ def admin_login():
 
 
 # ! -------------- CORE CUSTOMER FUNCTIONALITY --------------
+
 @app.route('/servEase/bookService/<int:service_id>/<int:price>/<string:desc>', methods=['GET', 'POST'])
-def bookService(service_id,price,desc):
+def bookService(service_id, price, desc):
+    # Get the service by ID
     service = Service.query.get(service_id)
-    service_name = Service.query.get(service_id).name
+    service_name = service.name if service else None
 
-    service_pro_name = service_name.lower().replace(' ','_') if len(service_name.split()) > 1 else service_name.lower()
-    # print(service_pro_name)
+    # Format service name to match the format stored in 'service_type'
+    service_pro_name = service_name.lower().replace(' ', '_') if len(service_name.split()) > 1 else service_name.lower()
+    
+    # Query all service professionals who offer this service type
     service_pros = ServiceProfessional.query.filter_by(service_type=service_pro_name).all()
-    # print(service_pros)
-    service_pro_names = [pro.name for pro in service_pros]
+    print(service_pros)
+    # Get the reviews for each service professional
+    professionals_with_reviews = []
+    for pro in service_pros:
+        reviews = Review.query.filter_by(professional_id=pro.id).all()
+        # Add the professional and their reviews to the list
+        professionals_with_reviews.append({
+            'professional': pro,
+            'reviews': reviews
+        })
 
-    if service:
-        image_url = service.image_url
-    return render_template('book.html',service_name=service_name,price=price,desc=desc,service_image_url=image_url,image_url=session.get('image_url'))
+    # If a service is found, get the image URL
+    image_url = service.image_url if service else None
+    
+    # Pass the list of service professionals with their reviews, service name, image URL, price, and description to the template
+    return render_template(
+        'book.html',
+        service_name=service_name,
+        price=price,
+        desc=desc,
+        professionals_with_reviews=professionals_with_reviews,
+        service_image_url=image_url,
+        image_url=session.get('image_url')
+    )
 
 
 

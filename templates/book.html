@@ -27,54 +27,44 @@ Book- ServEase🛠️
 <div class="pl-16">
 <!-- Accordion Item 1 -->
 <div class="border-b border-slate-200">
-    <button onclick="toggleAccordion(1)" class="w-full flex justify-between items-center py-5 text-slate-800">
-      <span>What is Material Tailwind?</span>
-      <span id="icon-1" class="text-slate-800 transition-transform duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-          <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
-        </svg>
-      </span>
-    </button>
-    <div id="content-1" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-      <div class="pb-5 text-sm text-slate-500">
-        Material Tailwind is a framework that enhances Tailwind CSS with additional styles and components.
+    {% for item in professionals_with_reviews %}
+    <div class="border-b border-slate-200">
+      <button onclick="toggleAccordion({{ loop.index }})" class="w-full flex justify-between items-center py-5 text-slate-800">
+        <span>{{ item.professional.name }} - {{ item.professional.experience }} years of experience</span>
+        <span id="icon-{{ loop.index }}" class="text-slate-800 transition-transform duration-300">
+          <!-- SVG for Plus icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+            <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
+          </svg>
+        </span>
+      </button>
+      <div id="content-{{ loop.index }}" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+        <!-- "Book Now" Button -->
+        <div class="p-4">
+          <a href="/book_service_pro/{{ item.professional.id }}" class="rounded-md bg-slate-800 py-2 px-4 text-white text-center text-sm transition-all shadow-md hover:shadow-lg">Book Now</a>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="p-4">
+          <h3 class="text-lg font-semibold mb-2">Reviews:</h3>
+          {% if item.reviews %}
+            <ul class="space-y-2">
+              {% for review in item.reviews %}
+                <li class="border rounded-md p-3">
+                  <p class="text-sm text-gray-700"><strong>Rating:</strong> {{ review.rating }}/5</p>
+                  <p class="text-sm text-gray-700"><strong>Comment:</strong> {{ review.comment }}</p>
+                  <p class="text-xs text-gray-500">Date: {{ review.date_created.strftime('%Y-%m-%d') }}</p>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-sm text-gray-500">No reviews available for this professional.</p>
+          {% endif %}
+        </div>
       </div>
     </div>
-  </div>
-   
-  <!-- Accordion Item 2 -->
-  <div class="border-b border-slate-200">
-    <button onclick="toggleAccordion(2)" class="w-full flex justify-between items-center py-5 text-slate-800">
-      <span>How to use Material Tailwind?</span>
-      <span id="icon-2" class="text-slate-800 transition-transform duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-          <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
-        </svg>
-      </span>
-    </button>
-    <div id="content-2" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-      <div class="pb-5 text-sm text-slate-500">
-        You can use Material Tailwind by importing its components into your Tailwind CSS project.
-      </div>
-    </div>
-  </div>
-   
-  <!-- Accordion Item 3 -->
-  <div class="border-b border-slate-200">
-    <button onclick="toggleAccordion(3)" class="w-full flex justify-between items-center py-5 text-slate-800">
-      <span>What can I do with Material Tailwind?</span>
-      <span id="icon-3" class="text-slate-800 transition-transform duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-          <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
-        </svg>
-      </span>
-    </button>
-    <div id="content-3" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-      <div class="pb-5 text-sm text-slate-500">
-        Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
-      </div>
-    </div>
-  </div>
+  {% endfor %}
+</div>
    
 
 
@@ -87,31 +77,19 @@ Book- ServEase🛠️
 
 <script>
     function toggleAccordion(index) {
-      const content = document.getElementById(`content-${index}`);
-      const icon = document.getElementById(`icon-${index}`);
-   
-      // SVG for Minus icon
-      const minusSVG = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-          <path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z" />
-        </svg>
-      `;
-   
-      // SVG for Plus icon
-      const plusSVG = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-          <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
-        </svg>
-      `;
-   
-      // Toggle the content's max-height for smooth opening and closing
-      if (content.style.maxHeight && content.style.maxHeight !== '0px') {
-        content.style.maxHeight = '0';
-        icon.innerHTML = plusSVG;
-      } else {
-        content.style.maxHeight = content.scrollHeight + 'px';
-        icon.innerHTML = minusSVG;
-      }
+        const content = document.getElementById(`content-${index}`);
+        const icon = document.getElementById(`icon-${index}`);
+
+        const minusSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4"><path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/></svg>`;
+        const plusSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/></svg>`;
+
+        if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+            content.style.maxHeight = '0';
+            icon.innerHTML = plusSVG;
+        } else {
+            content.style.maxHeight = content.scrollHeight + 'px';
+            icon.innerHTML = minusSVG;
+        }
     }
-  </script>
+</script>
 {% endblock %}
