@@ -313,6 +313,7 @@ def customer_allView():
 @app.route('/serviceDashboard')
 def service_dashboard():
     # TODO: ADD A GRAPH -------
+    current_user = session['user']
     service_requests = ServiceRequest.query.filter(
     ServiceRequest.professional_id == current_user,
     ServiceRequest.service_status.in_(['requested', 'assigned'])
