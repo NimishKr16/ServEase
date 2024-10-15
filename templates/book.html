@@ -1,79 +1,105 @@
 {% extends "base.html" %}
 {% block title %}
-Book- ServEase🛠️
+Book - ServEase🛠️
 {% endblock %}
 {% block css %}
 {% endblock %}
 
 {% block content %}
 
+{% if message %}
 
-<!-- <h1>{{service_id}}</h1> -->
-<!-- <h1>{{price}}</h1> -->
-<h1 class="text-4xl text-slate-800 font-semibold text-center pt-8">{{service_name}}</h1>
-<h1 class="text-2xl text-black font-semibold text-center pt-2 pb-10">{{desc}}</h1>
+<div class="flex items-center p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50" role="alert">
+    <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>
+    <span class="sr-only">Info</span>
+    <div>
+      <span class="font-medium">Service Requested Successfully! </span> Kindly wait for Confirmation.
+    </div>
+  </div>
+
+  {% endif %}
+<h1 class="text-4xl text-slate-800 font-semibold text-center pt-8">{{ service_name }}</h1>
+<h1 class="text-2xl text-black font-semibold text-center pt-2 pb-10">{{ desc }}</h1>
+
 
 
 <div class="flex flex-row">
 
-    <img src="{{service_image_url}}" class="p-4" alt="Service_Image" width="40%" height="40%" >
-
+    <img src="{{ service_image_url }}" class="p-4" alt="Service_Image" width="40%" height="40%">
 
     <div>
         <h1 class="text-2xl text-slate-800 font-semibold pl-64">Book a Service now</h1>
         <h1 class="text-xl text-slate-800 font-semibold pl-[16.5vw] pb-8">Pick from our curated experts</h1>
-        
 
-<div class="pl-16">
-<!-- Accordion Item 1 -->
-<div class="border-b border-slate-200">
-    {% for item in professionals_with_reviews %}
-    <div class="border-b border-slate-200">
-      <button onclick="toggleAccordion({{ loop.index }})" class="w-full flex justify-between items-center py-5 text-slate-800">
-        <span>{{ item.professional.name }} - {{ item.professional.experience }} years of experience</span>
-        <span id="icon-{{ loop.index }}" class="text-slate-800 transition-transform duration-300">
-          <!-- SVG for Plus icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-            <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
-          </svg>
-        </span>
-      </button>
-      <div id="content-{{ loop.index }}" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-        <!-- "Book Now" Button -->
-        <div class="p-4">
-          <a href="/book_service_pro/{{ item.professional.id }}" class="rounded-md bg-slate-800 py-2 px-4 text-white text-center text-sm transition-all shadow-md hover:shadow-lg">Book Now</a>
+        <div class="pl-16">
+            <!-- Accordion for Professionals -->
+            <div class="border-b border-slate-200">
+                {% for item in professionals_with_reviews %}
+                <div class="border-b border-slate-200">
+                    <button onclick="toggleAccordion({{ loop.index }})" class="w-full flex justify-between items-center py-5 text-slate-800">
+                        <span>{{ item.professional.name }} - {{ item.professional.experience }} years of experience</span>
+                        <span id="icon-{{ loop.index }}" class="text-slate-800 transition-transform duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+                                <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
+                            </svg>
+                        </span>
+                    </button>
+                    <div id="content-{{ loop.index }}" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+                        <!-- "Book Now" Button -->
+                        <div class="p-4">
+                            <button onclick="openModal({{ item.professional.id }})" class="rounded-md bg-slate-800 py-2 px-4 text-white text-center text-sm transition-all shadow-md hover:shadow-lg">Book Now</button>
+                        </div>
+
+                        <!-- Reviews Section -->
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold mb-2">Reviews:</h3>
+                            {% if item.reviews %}
+                                <ul class="space-y-2">
+                                    {% for review in item.reviews %}
+                                        <li class="border rounded-md p-3">
+                                            <p class="text-sm text-gray-700"><strong>Rating:</strong> {{ review.rating }}/5</p>
+                                            <p class="text-sm text-gray-700"><strong>Comment:</strong> {{ review.comment }}</p>
+                                            <p class="text-xs text-gray-500">Date: {{ review.date_created.strftime('%Y-%m-%d') }}</p>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-sm text-gray-500">No reviews available for this professional.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div id="bookingModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
+                    <div class="bg-white p-6 rounded-md w-80">
+                        <h2 class="text-2xl font-semibold mb-4">Select Service Date</h2>
+                        <form id="bookingForm" method="POST" action="/book_service/{{ service_id }}/{{ item.professional.id }}/{{price}}/{{desc}}">
+                            <input type="hidden" name="professional_id" id="professionalIdInput">
+                            <div class="mb-4">
+                                <label for="serviceDate" class="block mb-2 text-sm text-slate-600">Service Date:</label>
+                                <input type="date" name="service_date" id="serviceDate" class="w-full border border-slate-200 rounded-md px-3 py-2">
+                            </div>
+                            <div class="mb-4">
+                                <label for="remarks" class="block mb-2 text-sm text-slate-600">Remarks:</label>
+                                <textarea name="remarks" id="remarks" class="w-full border border-slate-200 rounded-md px-3 py-2" placeholder="Add any remarks here..."></textarea>
+                            </div>
+                            <div class="flex justify-end space-x-4">
+                                <button type="button" class="bg-red-500 text-white rounded-md py-2 px-4" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="bg-slate-800 text-white rounded-md py-2 px-4">Book</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
-
-        <!-- Reviews Section -->
-        <div class="p-4">
-          <h3 class="text-lg font-semibold mb-2">Reviews:</h3>
-          {% if item.reviews %}
-            <ul class="space-y-2">
-              {% for review in item.reviews %}
-                <li class="border rounded-md p-3">
-                  <p class="text-sm text-gray-700"><strong>Rating:</strong> {{ review.rating }}/5</p>
-                  <p class="text-sm text-gray-700"><strong>Comment:</strong> {{ review.comment }}</p>
-                  <p class="text-xs text-gray-500">Date: {{ review.date_created.strftime('%Y-%m-%d') }}</p>
-                </li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p class="text-sm text-gray-500">No reviews available for this professional.</p>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-  {% endfor %}
-</div>
-   
-
-
     </div>
 
-
 </div>
 
-</div>
+<!-- Modal -->
+
 
 <script>
     function toggleAccordion(index) {
@@ -90,6 +116,15 @@ Book- ServEase🛠️
             content.style.maxHeight = content.scrollHeight + 'px';
             icon.innerHTML = minusSVG;
         }
+    }
+
+    function openModal(professionalId) {
+        document.getElementById("bookingModal").classList.remove("hidden");
+        document.getElementById("professionalIdInput").value = professionalId;
+    }
+
+    function closeModal() {
+        document.getElementById("bookingModal").classList.add("hidden");
     }
 </script>
 {% endblock %}

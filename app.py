@@ -295,9 +295,55 @@ def customer_allView():
 
     return render_template('customerViewall.html',services=services,image_url=session.get('image_url'))
 
+
+# ! ------- CORE SERVICE EXPERT FUNCTIONALITY -----
+
 @app.route('/serviceDashboard')
 def service_dashboard():
-    return render_template('serviceDash.html',image_url=session.get('image_url'))
+    # TODO: ADD A GRAPH -------
+    return render_template('serviceDash.html')
+
+
+@app.route('/serviceDashboard/editProfile')
+def edit_service_prof():
+    return render_template('editProf.html')
+
+
+@app.route('/editProf',methods=['POST'])
+def edit_service_prof_post():
+    message = "PROFILE UPDATED"
+    name = request.form.get('name')
+    exp = request.form.get('exp')
+    desc = request.form.get('desc')
+    userID = session.get('user')
+
+    servicePro = ServiceProfessional.query.filter_by(id=userID).first()
+
+    if name:
+        servicePro.name = name
+    if exp:
+        servicePro.experience = exp
+    if desc:
+        servicePro.description = desc
+
+    db.session.commit()
+    return render_template('editProf.html',message=message)
+
+
+@app.route('/serviceDashboard/reviews')
+def service_reviews():
+    return render_template('serviceReviews.html')
+
+
+@app.route('/serviceDashboard/requests')
+def service_requests():
+    return render_template('serviceRequests.html')
+
+
+@app.route('/serviceDashboard/completed')
+def service_completed():
+    return render_template('serviceCompleted.html')
+
 
 # ------ WRAPPER FUNCTIONS ------
 def admin_required(f):
@@ -305,6 +351,24 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         if 'admin' not in session or session['admin'] != True:
             return redirect(url_for('login', message='Must be logged in as an admin'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def service_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'role' not in session or session['role'] != 'service':
+            return redirect(url_for('login', message='Must be logged in as an service prof'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def customer_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'role' not in session or session['role'] != 'customer':
+            return redirect(url_for('login', message='Must be logged in as an customer'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -335,6 +399,7 @@ def admin_login():
 @app.route('/servEase/bookService/<int:service_id>/<int:price>/<string:desc>', methods=['GET', 'POST'])
 def bookService(service_id, price, desc):
     # Get the service by ID
+    message = request.args.get('message')
     service = Service.query.get(service_id)
     service_name = service.name if service else None
 
@@ -343,7 +408,6 @@ def bookService(service_id, price, desc):
     
     # Query all service professionals who offer this service type
     service_pros = ServiceProfessional.query.filter_by(service_type=service_pro_name).all()
-    print(service_pros)
     # Get the reviews for each service professional
     professionals_with_reviews = []
     for pro in service_pros:
@@ -365,8 +429,26 @@ def bookService(service_id, price, desc):
         desc=desc,
         professionals_with_reviews=professionals_with_reviews,
         service_image_url=image_url,
-        image_url=session.get('image_url')
+        image_url=session.get('image_url'),
+        service_id=service_id,
+        message=message
     )
+
+
+@app.route('/book_service/<int:service_id>/<int:professional_id>/<int:price>/<string:desc>',methods=['POST'])
+def book_service(service_id, professional_id, price, desc):
+    date = request.form.get('date')
+    customer_id = session.get('user')
+    service_request = ServiceRequest(
+        service_id=service_id,
+        customer_id=customer_id,
+        professional_id=professional_id,
+        date_of_request=date
+    )
+    db.session.add(service_request)
+    db.session.commit()
+    return redirect(url_for('bookService',message=True,price=price,desc=desc,service_id=service_id))
+
 
 
 
@@ -385,6 +467,7 @@ def change_password():
             return redirect(url_for('profile'))
         else:
             return "<h1>Passwords do not match</h1>"
+
 
 # ------------ EDIT ADDRESS --------------
 @app.route('/edit_address', methods=['GET', 'POST'])

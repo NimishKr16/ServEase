@@ -1,0 +1,65 @@
+{% extends 'serviceDash.html' %}
+{% block title %}
+Edit Profile
+{% endblock %}
+
+{% block content %}
+
+<div class="mr-[-20vw]">
+
+
+<div class="relative flex flex-col rounded-xl bg-transparent pt-16">
+    <h4 class="block text-xl font-medium text-slate-800">
+      Edit Profile
+    </h4>
+    <p class="text-slate-500 font-light">
+      Keep your profile updated to get more bookings!
+    </p>
+    <form class="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96" action="/editProf" method="POST">
+      <div class="mb-1 flex flex-col gap-6">
+        <!-- Name Field -->
+        <div class="w-full max-w-sm min-w-[200px]">
+          <label class="block mb-2 text-sm text-slate-600">
+            Name
+          </label>
+          <input name="name" type="text" class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow" placeholder="Your Name" />
+        </div> 
+        <!-- Description Field -->
+        <div class="w-full max-w-sm min-w-[200px]">
+          <label class="block mb-2 text-sm text-slate-600">
+            Description
+          </label>
+          <textarea name="desc" class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow" placeholder="Describe yourself"></textarea>
+        </div>
+        <!-- Experience Field -->
+        <div class="w-full max-w-sm min-w-[200px]">
+          <label class="block mb-2 text-sm text-slate-600">
+            Experience in months
+          </label>
+          <input name="exp" type="text" class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow" placeholder="Years of Experience" />
+        </div>
+      </div>
+      <div class="inline-flex items-center mt-2">
+        
+        
+      </div>
+      <button type="submit" class="text-white mt-8 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+      
+      </p>
+    </form>
+  </div>
+
+  {% if message %}
+  <div class="flex items-center p-4 mt-2 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+    <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>
+    <span class="sr-only">Info</span>
+    <div>
+      <span class="font-medium">Profile Updated Successfully! </span>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
