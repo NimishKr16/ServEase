@@ -181,6 +181,17 @@ def profile():
     pinCode = customer.pin_code
     return render_template('profile.html', address=address, pinCode=pinCode, ab = name[0],customerName=name, joinDate=joinDate,image_url=session.get('image_url'))
 
+
+@app.route('/bookings')
+def bookings():
+    current_customer_id = session['user']  # Assuming session['user'] contains the user ID
+    
+    # Query the database for all service requests made by the current customer
+    service_requests = ServiceRequest.query.filter_by(
+        customer_id=current_customer_id
+    ).all()
+    return render_template('bookings.html', service_requests=service_requests)
+
 # * --------- AUTHENTICATION ----------
 # ---- LOGOUT ----
 @app.route('/logout')
@@ -301,7 +312,12 @@ def customer_allView():
 @app.route('/serviceDashboard')
 def service_dashboard():
     # TODO: ADD A GRAPH -------
-    return render_template('serviceDash.html')
+    service_requests = ServiceRequest.query.filter(
+    ServiceRequest.professional_id == current_user,
+    ServiceRequest.service_status.in_(['requested', 'assigned'])
+    ).all()
+    num_requests = len(service_requests)
+    return render_template('serviceDash.html',reqCount=num_requests)
 
 
 @app.route('/serviceDashboard/editProfile')
@@ -332,17 +348,103 @@ def edit_service_prof_post():
 
 @app.route('/serviceDashboard/reviews')
 def service_reviews():
-    return render_template('serviceReviews.html')
+    pass
+    # current_user = session['user']
+    # print(current_user)
+    # service_professional = ServiceProfessional.query.filter_by(user_id=current_user).first()
+    # print(service_professional)
+    #     # Fetch the service requests assigned to this professional
+    # service_requests = ServiceRequest.query.filter_bky(professional_id=service_professional.id, service_status='requested').all()
+    # print(service_requests)
+    # return render_template('serviceRequests.html', service_requests=service_requests)
+
+
+@app.route('/accept_service_request/<int:request_id>', methods=['POST'])
+def accept_service_request(request_id):
+    # Fetch the service request
+    service_request = ServiceRequest.query.get_or_404(request_id)
+    
+    # Update the service status to 'assigned'
+    service_request.service_status = 'assigned'
+    db.session.commit()
+    
+    # Redirect back to the service requests page
+    return redirect(url_for('service_requests'))
+
+
+@app.route('/ignore_service_request/<int:request_id>', methods=['POST'])
+def ignore_service_request(request_id):
+    # Fetch the service request
+    service_request = ServiceRequest.query.get_or_404(request_id)
+    
+    # Optionally, you could update the status to 'ignored' or perform other actions
+    service_request.service_status = 'ignored'
+    db.session.commit()
+    
+    # Redirect back to the service requests page
+    return redirect(url_for('service_requests'))
+
+
+
+@app.route('/complete_service_request/<int:request_id>', methods=['POST'])
+def complete_service_request(request_id):
+    # Fetch the service request
+    service_request = ServiceRequest.query.get_or_404(request_id)
+    
+    # Update the service status to 'closed' and set the date of completion
+    service_request.service_status = 'closed'
+    service_request.date_of_completion = datetime.now()
+    db.session.commit()
+    
+    # Redirect back to the service requests page
+    return redirect(url_for('service_requests'))
 
 
 @app.route('/serviceDashboard/requests')
 def service_requests():
-    return render_template('serviceRequests.html')
+    current_user = session['user']
+    print(current_user)
+    service_professional = ServiceProfessional.query.filter_by(id=current_user).first()
+    print(service_professional)
+    #     # Fetch the service requests assigned to this professional
+    service_requests = ServiceRequest.query.filter(
+    ServiceRequest.professional_id == current_user,
+    ServiceRequest.service_status.in_(['requested', 'assigned'])
+    ).all()
+    num_requests = len(service_requests)
+
+    service_requests2 = ServiceRequest.query.filter_by(
+        professional_id=current_user, 
+        service_status='closed'
+    ).all()
+
+    compReq = len(service_requests2)
+    # print(service_requests)
+    # return render_template('serviceRequests.html')
+    return render_template('serviceRequests.html', service_requests=service_requests,reqCount=num_requests,compReq=compReq)
 
 
 @app.route('/serviceDashboard/completed')
 def service_completed():
-    return render_template('serviceCompleted.html')
+    # Get the current logged-in user ID
+    current_user_id = session['user']  # Assuming session['user'] contains the user ID
+    
+    # Query the database for closed service requests for the current professional
+    service_requests = ServiceRequest.query.filter_by(
+        professional_id=current_user_id, 
+        service_status='closed'
+    ).all()
+
+    compReq = len(service_requests)
+
+    service_requests2 = ServiceRequest.query.filter(
+    ServiceRequest.professional_id == current_user_id,
+    ServiceRequest.service_status.in_(['requested', 'assigned'])
+    ).all()
+    num_requests = len(service_requests2)
+    
+    # Render the template and pass the retrieved service requests
+    return render_template('serviceCompleted.html', service_requests=service_requests, compReq=compReq, reqCount=num_requests)
 
 
 # ------ WRAPPER FUNCTIONS ------
@@ -513,6 +615,7 @@ def admin_dashboard():
     custCount = Customer.query.count()
     expCount = ServiceProfessional.query.filter_by(is_approved=True).count()
     return render_template('admin-dash.html',custCount=custCount,expCount=expCount,reqCount=reqCount)
+
 
 #! -----  CORE ADMIN FUNCTIONALITY  -----
 

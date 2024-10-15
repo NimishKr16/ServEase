@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
+<div class="relative flex flex-col h-full overflow-scroll text-gray-700 bg-white shadow-md rounded-lg bg-clip-border">
+    <table class="w-full sm:w-[25vw] text-left table-auto">
+        <thead>
+            <tr class="border-b border-slate-300 bg-slate-50">
+                <th class="p-4 text-sm font-normal leading-none text-slate-500">Date of Request</th>
+                <th class="p-4 text-sm font-normal leading-none text-slate-500">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in service_requests %}
+            <tr class="hover:bg-slate-50">
+                <td class="p-4 border-b border-slate-200 py-5">
+                    <p class="text-sm text-slate-500">{{ request.date_of_request.strftime('%d/%m/%Y') }}</p>
+                </td>
+                <td class="p-4 border-b border-slate-200 py-5">
+                    <p class="text-sm text-slate-500">{{ request.service_status }}</p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
