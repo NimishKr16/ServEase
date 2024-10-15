@@ -189,7 +189,8 @@ def bookings():
     # Query the database for all service requests made by the current customer
     service_requests = ServiceRequest.query.filter_by(
         customer_id=current_customer_id
-    ).all()
+    ).join(Service).all()
+
     return render_template('bookings.html', service_requests=service_requests,image_url=session.get('image_url'))
 
 # * --------- AUTHENTICATION ----------
