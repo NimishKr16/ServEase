@@ -190,7 +190,7 @@ def bookings():
     service_requests = ServiceRequest.query.filter_by(
         customer_id=current_customer_id
     ).all()
-    return render_template('bookings.html', service_requests=service_requests)
+    return render_template('bookings.html', service_requests=service_requests,image_url=session.get('image_url'))
 
 # * --------- AUTHENTICATION ----------
 # ---- LOGOUT ----
