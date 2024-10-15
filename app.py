@@ -334,9 +334,17 @@ def admin_login():
 @app.route('/servEase/bookService/<int:service_id>/<int:price>/<string:desc>', methods=['GET', 'POST'])
 def bookService(service_id,price,desc):
     service = Service.query.get(service_id)
+    service_name = Service.query.get(service_id).name
+
+    service_pro_name = service_name.lower().replace(' ','_') if len(service_name.split()) > 1 else service_name.lower()
+    # print(service_pro_name)
+    service_pros = ServiceProfessional.query.filter_by(service_type=service_pro_name).all()
+    # print(service_pros)
+    service_pro_names = [pro.name for pro in service_pros]
+
     if service:
         image_url = service.image_url
-    return render_template('book.html',service_id=service_id,price=price,desc=desc,service_image_url=image_url,image_url=session.get('image_url'))
+    return render_template('book.html',service_name=service_name,price=price,desc=desc,service_image_url=image_url,image_url=session.get('image_url'))
 
 
 
