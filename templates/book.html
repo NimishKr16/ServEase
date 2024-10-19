@@ -29,17 +29,19 @@ Book - ServEase🛠️
 
     <img src="{{ service_image_url }}" class="p-4" alt="Service_Image" width="40%" height="40%">
 
-    <div>
-        <h1 class="text-2xl text-slate-800 font-semibold pl-64">Book a Service now</h1>
-        <h1 class="text-xl text-slate-800 font-semibold pl-[16.5vw] pb-8">Pick from our curated experts</h1>
-
+    <div class="text-center">
+        <h1 class="text-2xl text-slate-800 font-semibold pl-[10vw]">Book a Service now</h1>
+        <h1 class="text-xl text-slate-800 font-semibold pl-[10.5vw] pb-2">Pick from our curated experts</h1>
+        <h2 class="text-2xl font-bold pl-[11vw] text-black uppercase pb-2">
+           ₹{{price}}
+        </h2>
         <div class=" ml-[13vw] w-[30vw]">
             <!-- Accordion for Professionals -->
             <div class="border-b border-slate-200 ">
                 {% for item in professionals_with_reviews %}
                 <div class="border-b border-slate-200">
                     <button onclick="toggleAccordion({{ loop.index }})" class="w-full flex justify-between items-center py-5 text-slate-800">
-                        <span>{{ item.professional.name }} - {{ item.professional.experience }} years of experience</span>
+                        <span><span class="font-bold">{{ item.professional.name }}</span> - {{ item.professional.experience }} years of experience</span>
                         <span id="icon-{{ loop.index }}" class="text-slate-800 transition-transform duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
                                 <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />

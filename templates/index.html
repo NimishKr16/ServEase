@@ -15,7 +15,7 @@
         <div class="nav-links">
           <a href="/">Home</a>
           <a href="#">About</a>
-          <a href="#">Contact</a>
+          <a href="{{ url_for('contactUs') }}">Contact</a>
           <a href=" {{ url_for('login') }}" target="_blank" id="login-btn">LOGIN</a>
         </div>
       </div>
@@ -42,19 +42,19 @@
           </div>
         </div>
         <div class="logos">
-          <img src="../static/images/stock1.jpeg" alt="Logo 1">
-          <img src="../static/images/stock2.png" alt="Logo 2">
-          <img src="../static/images/stock3.png" alt="Logo 3">
-          <img src="../static/images/stock4.jpeg" alt="Logo 4">
+          <img src="../static/images/appser.jpeg" alt="Logo 1">
+          <img src="../static/images/servc.png  " alt="Logo 2">
+          <img src="../static/images/comfort.jpeg" alt="Logo 3">
+          <img src="../static/images/homeser.webp" alt="Logo 4">
         </div>
       </div>
       <div class="container">
-        <h1 class="landing-head">Image Slider</h1>
+        <h1 class="landing-head">Simplified Home Solutions</h1>
         <div class="slider">
           <div class="slides">
-            <div class="slide"><img src="https://via.placeholder.com/800x400" alt="Slide 1"></div>
-            <div class="slide"><img src="https://via.placeholder.com/800x400" alt="Slide 2"></div>
-            <div class="slide"><img src="https://via.placeholder.com/800x400" alt="Slide 3"></div>
+            <div class="slide"><img src="/static/images/smart-home-solutions.jpg" alt="Slide 1" height="60%"></div>
+            <div class="slide"><img src="/static/images/Home-Services-Apps.webp" alt="Slide 2"></div>
+            <div class="slide"><img src="/static/images/categs.jpeg" alt="Slide 3" height="80%"></div>
           </div>
           <div class="slider-buttons">
             <button class="slider-button" id="prevBtn">&#10094;</button>

@@ -161,6 +161,10 @@ class Review(db.Model):
 def home():
     return render_template('index.html')
 
+@app.route('/contactUs')
+def contactUs():
+    return render_template('contact.html')
+
 @app.route('/login')
 def login():
     message = request.args.get('message')
@@ -172,6 +176,7 @@ def signup():
 
 # * --------- PROFILE ----------
 @app.route('/profile')
+@customer_required
 def profile():
     userId = session.get('user')
     customer = Customer.query.filter_by(id=userId).first()
@@ -183,6 +188,7 @@ def profile():
 
 
 @app.route('/bookings')
+@customer_required
 def bookings():
     current_customer_id = session['user']  # Assuming session['user'] contains the user ID
     
@@ -268,6 +274,7 @@ def loginUser():
 
 
 @app.route('/servEase/home',methods=['GET','POST'])
+@customer_required
 def customer_dashboard():
     services = Service.query.all()
     image_url = session.get('image_url')
@@ -287,6 +294,7 @@ def customer_dashboard():
 
 
 @app.route('/servEase/home/seeall')
+@customer_required
 def customer_allView():
     services = Service.query.all()
     image_url = session.get('image_url')
@@ -311,6 +319,7 @@ def customer_allView():
 # ! ------- CORE SERVICE EXPERT FUNCTIONALITY -----
 
 @app.route('/serviceDashboard')
+@service_required
 def service_dashboard():
     # TODO: ADD A GRAPH -------
     current_user = session['user']
@@ -323,11 +332,13 @@ def service_dashboard():
 
 
 @app.route('/serviceDashboard/editProfile')
+@service_required
 def edit_service_prof():
     return render_template('editProf.html')
 
 
 @app.route('/editProf',methods=['POST'])
+@service_required
 def edit_service_prof_post():
     message = "PROFILE UPDATED"
     name = request.form.get('name')
@@ -349,6 +360,7 @@ def edit_service_prof_post():
 
 
 @app.route('/serviceDashboard/reviews')
+@service_required
 def service_reviews():
     pass
     # current_user = session['user']
@@ -362,6 +374,7 @@ def service_reviews():
 
 
 @app.route('/accept_service_request/<int:request_id>', methods=['POST'])
+@service_required
 def accept_service_request(request_id):
     # Fetch the service request
     service_request = ServiceRequest.query.get_or_404(request_id)
@@ -375,6 +388,7 @@ def accept_service_request(request_id):
 
 
 @app.route('/ignore_service_request/<int:request_id>', methods=['POST'])
+@service_required
 def ignore_service_request(request_id):
     # Fetch the service request
     service_request = ServiceRequest.query.get_or_404(request_id)
@@ -389,6 +403,7 @@ def ignore_service_request(request_id):
 
 
 @app.route('/complete_service_request/<int:request_id>', methods=['POST'])
+@customer_required
 def complete_service_request(request_id):
     # Fetch the service request
     service_request = ServiceRequest.query.get_or_404(request_id)
@@ -399,10 +414,11 @@ def complete_service_request(request_id):
     db.session.commit()
     
     # Redirect back to the service requests page
-    return redirect(url_for('service_requests'))
+    return redirect(url_for('bookings'))
 
 
 @app.route('/serviceDashboard/requests')
+@service_required
 def service_requests():
     current_user = session['user']
     print(current_user)
@@ -427,6 +443,7 @@ def service_requests():
 
 
 @app.route('/serviceDashboard/completed')
+@service_required
 def service_completed():
     # Get the current logged-in user ID
     current_user_id = session['user']  # Assuming session['user'] contains the user ID
@@ -501,6 +518,7 @@ def admin_login():
 # ! -------------- CORE CUSTOMER FUNCTIONALITY --------------
 
 @app.route('/servEase/bookService/<int:service_id>/<int:price>/<string:desc>', methods=['GET', 'POST'])
+@customer_required
 def bookService(service_id, price, desc):
     # Get the service by ID
     message = request.args.get('message')
@@ -540,6 +558,7 @@ def bookService(service_id, price, desc):
 
 
 @app.route('/book_service/<int:service_id>/<int:professional_id>/<int:price>/<string:desc>',methods=['POST'])
+@customer_required
 def book_service(service_id, professional_id, price, desc):
     date = request.form.get('date')
     customer_id = session.get('user')
@@ -558,6 +577,7 @@ def book_service(service_id, professional_id, price, desc):
 
 # ------------ CHANGE PASSWORD --------------
 @app.route('/change_password', methods=['GET', 'POST'])
+@customer_required
 def change_password():
     if request.method == 'POST':
         new_password = request.form.get('new_password')
@@ -575,6 +595,7 @@ def change_password():
 
 # ------------ EDIT ADDRESS --------------
 @app.route('/edit_address', methods=['GET', 'POST'])
+@customer_required
 def edit_address():
     if request.method == 'POST':
         image = request.files['image']
@@ -606,6 +627,7 @@ def edit_address():
 
 
 @app.route('/admin_logout')
+@admin_required
 def admin_logout():
     session.pop('admin')
     return redirect(url_for('admin_login_page'))
@@ -630,6 +652,7 @@ def manage_customers():
     return render_template('adminCust-dash.html',reqCount=reqCount,customers=customers)
 
 @app.route('/toggle_block_customer/<int:customer_id>', methods=['POST'])
+@admin_required
 def toggle_block_customer(customer_id):
     # Fetch the customer by ID
     customer = Customer.query.get(customer_id)
@@ -650,6 +673,7 @@ def toggle_block_customer(customer_id):
 # ------------------------------ MANAGE SERVICE PROF. ------------------------------
 
 @app.route('/block_service_professional/<int:professional_id>', methods=['POST'])
+@admin_required
 def block_service_professional(professional_id):
     professional = ServiceProfessional.query.get(professional_id)
     if professional:
@@ -692,6 +716,7 @@ def manage_reviews():
     return render_template('adminReq-dash.html',reqCount=reqCount, service_professionals=unapproved)
 
 @app.route('/approve/<int:professional_id>', methods=['POST'])
+@admin_required
 def approve_service_professional(professional_id):
     # Logic to approve the service professional
     service_professional = ServiceProfessional.query.get(professional_id)
@@ -701,6 +726,7 @@ def approve_service_professional(professional_id):
     return redirect(url_for('manage_reviews'))  # Redirect to the relevant page
 
 @app.route('/deny/<int:professional_id>', methods=['POST'])
+@admin_required
 def deny_service_professional(professional_id):
     # Logic to deny the service professional
     service_professional = ServiceProfessional.query.get(professional_id)
@@ -722,6 +748,7 @@ def manage_services():
 
 
 @app.route('/update_service', methods=['POST'])
+@admin_required
 def update_service():
     service_id = request.form.get('service_id')
     service = Service.query.get(service_id)
@@ -740,6 +767,7 @@ def update_service():
 
 
 @app.route('/delete_service/<int:service_id>', methods=['POST'])
+@admin_required
 def delete_service(service_id):
     # Find the service by ID
     service = Service.query.get(service_id)
@@ -754,6 +782,7 @@ def delete_service(service_id):
 
 
 @app.route('/add_service', methods=['GET', 'POST'])
+@admin_required
 def add_service():
     if request.method == 'POST':
         # Get data from the form

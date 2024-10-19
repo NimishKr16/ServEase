@@ -43,11 +43,7 @@ Job Requests
                             </button>
                         </form>
                     {% elif request.service_status == 'assigned' %}
-                        <form action="{{ url_for('complete_service_request', request_id=request.id) }}" method="POST">
-                            <button type="submit" class="px-3 py-1 text-sm font-semibold text-white bg-blue-500 rounded hover:bg-blue-700">
-                                Complete
-                            </button>
-                        </form>
+                        <h1 class="font-semibold text-green-600">JOB ALLOTED</h1>
                     {% endif %}
                 </td>
             </tr>

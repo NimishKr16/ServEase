@@ -22,7 +22,7 @@
         <!-- Navbar -->
         <div class="navbar">
           <div class="flex-1">
-            <a href="{{url_for('home')}}" class="btn btn-ghost text-2xl text-white">ServEase🛠️</a>
+            <a href="{{url_for('customer_dashboard')}}" class="btn btn-ghost text-2xl text-white">ServEase🛠️</a>
           </div>
           <div class="flex-none gap-2">
             <!-- <div class="form-control">
@@ -40,13 +40,16 @@
                 <li>
                   <a href="{{url_for('profile')}}" class="justify-between">
                     Profile
+                    <span class="badge"> 👤</span>
                   </a>
                 </li>
                 <li><a href="{{url_for('bookings')}}">Bookings
-                  <span class="badge">3</span>
+                  <span class="badge text-red-500">!</span>
                 </a></li>
                 
-                <li><a href="{{url_for('logout')}}">Logout</a></li>
+                <li><a href="{{url_for('logout')}}">Logout
+                  <span class="badge text-red-500">🚪</span>
+                </a></li>
               </ul>
             </div>
           </div>

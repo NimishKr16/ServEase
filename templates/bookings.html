@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Profile{% endblock %}
+{% block title %}My Bookings{% endblock %}
 
 {% block content %}
 <div class="w-full flex justify-between items-center mb-3 pt-8 pl-3 pb-8 self-center">
@@ -14,23 +14,36 @@
     <table class="w-full sm:w-[25vw] text-left table-auto">
         <thead>
             <tr class="border-b border-slate-300 bg-slate-50">
-                <th class="p-4 text-sm font-normal leading-none text-slate-500">Date of Request</th>
-                <th class="p-4 text-sm font-normal leading-none text-slate-500">Service Type</th>
-                <th class="p-4 text-sm font-normal leading-none text-slate-500">Status</th>
+                <th class="p-4 text-lg font-bold leading-none text-slate-500">Date of Request</th>
+                <th class="p-4 text-lg font-bold leading-none text-slate-500">Service Type</th>
+                <th class="p-4 text-lg font-bold leading-none text-slate-500">Status</th>
             </tr>
         </thead>
         <tbody>
             {% for request in service_requests %}
             <tr class="hover:bg-slate-50">
                 <td class="p-4 border-b border-slate-200 py-5">
-                    <p class="text-sm text-slate-500">{{ request.date_of_request.strftime('%d/%m/%Y') }}</p>
+                    <p class="text-lg text-slate-500">{{ request.date_of_request.strftime('%d/%m/%Y') }}</p>
                 </td>
                 <td class="p-4 border-b border-slate-200 py-5">
-                    <p class="text-sm text-slate-500">{{ request.service.name }}</p>
+                    <p class="text-lg text-slate-500 font-semibold">{{ request.service.name }}</p>
                 </td>
+                
+                
                 <td class="p-4 border-b border-slate-200 py-5">
-                    <p class="text-sm text-slate-500">{{ request.service_status }}</p>
+                    {% if request.service_status == 'assigned' %}
+                        <form action="{{ url_for('complete_service_request', request_id=request.id) }}" method="POST">
+                            <button type="submit" class="px-3 py-1 text-sm font-semibold text-white bg-blue-500 rounded hover:bg-blue-700">
+                                Complete
+                            </button>
+                        </form>
+                    {% elif request.service_status == 'closed' %}
+                    <p class="text-lg text-green-500 font-semibold">COMPLETE ✅</p>
+                    {% else %}
+                    <p class="text-lg text-yellow-500 font-semibold">REQUESTED⏳</p>
+                    {% endif %}
                 </td>
+                
             </tr>
             {% endfor %}
         </tbody>
