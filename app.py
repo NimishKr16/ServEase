@@ -155,6 +155,35 @@ class Review(db.Model):
     def __repr__(self):
         return f"<Review(id={self.id}, rating={self.rating}, comment='{self.comment}')>"
 
+
+# ------ WRAPPER FUNCTIONS ------
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'admin' not in session or session['admin'] != True:
+            return redirect(url_for('login', message='Must be logged in as an admin'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def service_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'role' not in session or session['role'] != 'service':
+            return redirect(url_for('login', message='Must be logged in as an service prof'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def customer_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'role' not in session or session['role'] != 'customer':
+            return redirect(url_for('login', message='Must be logged in as an customer'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+    
 # * ------ GENERIC ROUTES -------
 
 @app.route('/')
@@ -328,7 +357,13 @@ def service_dashboard():
     ServiceRequest.service_status.in_(['requested', 'assigned'])
     ).all()
     num_requests = len(service_requests)
-    return render_template('serviceDash.html',reqCount=num_requests)
+    service_requests2 = ServiceRequest.query.filter_by(
+        professional_id=current_user, 
+        service_status='closed'
+    ).all()
+
+    compReq = len(service_requests2)
+    return render_template('serviceDash.html',reqCount=num_requests,compReq=compReq)
 
 
 @app.route('/serviceDashboard/editProfile')
@@ -466,32 +501,7 @@ def service_completed():
     return render_template('serviceCompleted.html', service_requests=service_requests, compReq=compReq, reqCount=num_requests)
 
 
-# ------ WRAPPER FUNCTIONS ------
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'admin' not in session or session['admin'] != True:
-            return redirect(url_for('login', message='Must be logged in as an admin'))
-        return f(*args, **kwargs)
-    return decorated_function
 
-
-def service_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'role' not in session or session['role'] != 'service':
-            return redirect(url_for('login', message='Must be logged in as an service prof'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-def customer_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'role' not in session or session['role'] != 'customer':
-            return redirect(url_for('login', message='Must be logged in as an customer'))
-        return f(*args, **kwargs)
-    return decorated_function
 
 
 # * ------------ ADMIN ROUTES ------------ #
