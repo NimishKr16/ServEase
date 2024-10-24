@@ -1,10 +1,13 @@
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, Response
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 from flask_migrate import Migrate
-
+import io
+import matplotlib.pyplot
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 #  CLOUD IMAGE STORAGE
 import cloudinary
 import cloudinary.uploader
@@ -219,9 +222,9 @@ def profile():
 @app.route('/bookings')
 @customer_required
 def bookings():
-    current_customer_id = session['user']  # Assuming session['user'] contains the user ID
+    current_customer_id = session['user']  
     
-    # Query the database for all service requests made by the current customer
+    
     service_requests = ServiceRequest.query.filter_by(
         customer_id=current_customer_id
     ).join(Service).all()
@@ -346,6 +349,39 @@ def customer_allView():
 
 
 # ! ------- CORE SERVICE EXPERT FUNCTIONALITY -----
+
+
+@app.route('/servicedashPlot.png')
+def Service_plot_png():
+    current_user = session.get('user')
+    current_professional = ServiceProfessional.query.filter_by(id=current_user).first()
+    professional_name = current_professional.name
+    professional_service_type = current_professional.service_type.upper()
+    # Fetch data for the logged-in service professional
+    num_requests = ServiceRequest.query.filter_by(professional_id=current_user).count()
+    num_completed = ServiceRequest.query.filter_by(professional_id=current_user, service_status='closed').count()
+    num_reviews = Review.query.filter_by(professional_id=current_user).count()
+
+    # Data to plot
+    labels = ['Total Requests', 'Completed Jobs', 'Reviews']
+    values = [num_requests, num_completed, num_reviews]
+
+    # Plotting
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.bar(labels, values, color=['blue', 'green', 'orange'])
+    title = f'{professional_name}\'s Overview for {professional_service_type}'
+    ax.set_title(title)
+    ax.set_xlabel('Category')
+    ax.set_ylabel('Count')
+
+    # Save the plot to a BytesIO buffer
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png')
+    buf.seek(0)
+    plt.close(fig)
+
+    # Return the image as a response
+    return Response(buf.getvalue(), mimetype='image/png')
 
 @app.route('/serviceDashboard')
 @service_required

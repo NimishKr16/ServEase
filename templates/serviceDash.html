@@ -172,6 +172,9 @@
   <div class="p-4 sm:ml-64">
 
     {% block content %}
+    <img 
+    class="mt-8"
+    src="{{ url_for('Service_plot_png') }}" alt="Service Dashboard Plot">
     {% endblock %}
   
   </div>
