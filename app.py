@@ -228,8 +228,11 @@ def bookings():
     service_requests = ServiceRequest.query.filter_by(
         customer_id=current_customer_id
     ).join(Service).all()
+    reviews = Review.query.filter_by(customer_id=current_customer_id).all()
+    reviewed_request_ids = {review.professional_id for review in reviews}  # Set of reviewed professional IDs
 
-    return render_template('bookings.html', service_requests=service_requests,image_url=session.get('image_url'))
+
+    return render_template('bookings.html', service_requests=service_requests,image_url=session.get('image_url'),reviewed_request_ids=reviewed_request_ids)
 
 # * --------- AUTHENTICATION ----------
 # ---- LOGOUT ----
@@ -433,15 +436,26 @@ def edit_service_prof_post():
 @app.route('/serviceDashboard/reviews')
 @service_required
 def service_reviews():
-    pass
-    # current_user = session['user']
-    # print(current_user)
+    current_user = session['user']
+    print(current_user)
     # service_professional = ServiceProfessional.query.filter_by(user_id=current_user).first()
     # print(service_professional)
-    #     # Fetch the service requests assigned to this professional
-    # service_requests = ServiceRequest.query.filter_bky(professional_id=service_professional.id, service_status='requested').all()
-    # print(service_requests)
-    # return render_template('serviceRequests.html', service_requests=service_requests)
+        # Fetch the service requests assigned to this professional
+    reviews = Review.query.filter_by(professional_id=current_user).all()
+    print(reviews)
+    service_requests = ServiceRequest.query.filter(
+    ServiceRequest.professional_id == current_user,
+    ServiceRequest.service_status.in_(['requested', 'assigned'])
+    ).all()
+    num_requests = len(service_requests)
+
+    service_requests2 = ServiceRequest.query.filter_by(
+        professional_id=current_user, 
+        service_status='closed'
+    ).all()
+
+    compReq = len(service_requests2) 
+    return render_template('serviceReviews.html', reviews=reviews,reqCount=num_requests,compReq=compReq)
 
 
 @app.route('/accept_service_request/<int:request_id>', methods=['POST'])
@@ -619,6 +633,38 @@ def book_service(service_id, professional_id, price, desc):
     return redirect(url_for('bookService',message=True,price=price,desc=desc,service_id=service_id))
 
 
+@app.route('/submit_review', methods=['POST'])
+def submit_review():
+    # Check if user is logged in
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    # Get form data
+    customer_id = session['user']
+    service_request_id = request.form.get('service_request_id')
+    rating = request.form.get('rating')
+    comment = request.form.get('comment')
+
+    # Validate form data
+    if not service_request_id or not rating:
+        return redirect(url_for('bookings'))  # Redirect back to bookings page if validation fails
+
+    # Find the related Service Professional
+    service_request = ServiceRequest.query.filter_by(id=service_request_id).first()
+    if not service_request or service_request.customer_id != customer_id:
+        return redirect(url_for('bookings'))  # Redirect if the service request is invalid
+
+    # Create a new Review
+    review = Review(
+        customer_id=customer_id,
+        professional_id=service_request.professional_id,
+        rating=int(rating),
+        comment=comment
+    )
+    db.session.add(review)
+    db.session.commit()
+    print("Review added successfully!")
+    return redirect(url_for('bookings'))
 
 
 # ------------ CHANGE PASSWORD --------------
