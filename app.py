@@ -230,7 +230,8 @@ def bookings():
         .join(Service)
         .order_by(ServiceRequest.service_status.desc(), ServiceRequest.date_of_request.desc())
         .all()
-        )
+    )
+
     reviews = Review.query.filter_by(customer_id=current_customer_id).all()
     reviewed_request_ids = {review.professional_id for review in reviews}  # Set of reviewed professional IDs
 
