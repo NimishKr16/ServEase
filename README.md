@@ -11,6 +11,7 @@ This guide will help you set up and run a **ServEase🛠️**. It is Flask app (
 ```bash
 #Step 1
 git clone https://github.com/NimishKr16/ServEase
+
 #Step2
 cd ServEase
 
