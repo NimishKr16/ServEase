@@ -676,12 +676,13 @@ def submit_review():
 @customer_required
 def change_password():
     if request.method == 'POST':
-        new_password = request.form.get('new_password')
-        confirm_password = request.form.get('confirm_password')
+        new_password = request.form.get('new-password')
+        confirm_password = request.form.get('confirm-password')
         userId = session.get('user')
         user = User.query.filter_by(id=userId).first()
         if new_password == confirm_password:
-            user.Password = new_password
+            hashed_password = generate_password_hash(new_password, method='pbkdf2:sha256', salt_length=16)
+            user.Password = hashed_password
             db.session.commit()
             print("======= PASSWORD CHANGED SUCCESSFULLY ======= ")
             return redirect(url_for('profile'))
